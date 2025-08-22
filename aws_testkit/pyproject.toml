@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel", "build"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "moto-testkit"  # ajuste se quiser outro nome
+version = "0.2.0"
+description = "Test helpers for moto + boto3/aioboto3 with typed helpers (Pydantic) and pytest integration."
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [{name="Rafael"}]
+license = {text = "MIT"}
+dependencies = [
+  "boto3>=1.26",
+  "aioboto3>=10.0",
+  "moto>=4.0",
+  "pydantic>=1.10",
+]
+
+[tool.black]
+line-length = 88
+
+[tool.ruff]
+line-length = 88
