@@ -1,26 +1,19 @@
 import unittest
 
+from aws_testkit.examples.sns.assincrono.sns_async_repository import SNSAsyncRepository
 from aws_testkit.src import MotoTestKit
 
 
-class TestSNSWithMoto(unittest.IsolatedAsyncioTestCase):
+class TestSNSRepositoryWithMoto(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
         self.kit = MotoTestKit(auto_start=True, patch_aiobotocore=True)
+        self.repo = SNSAsyncRepository()
 
     async def asyncTearDown(self):
         await self.kit.close_async_clients()
         self.kit.stop()
 
-    async def test_sns_create_and_list_topics(self):
-        sns_client = await self.kit.get_async_client("sns")
-
-        topic_name = "meu-topico-teste"
-        await sns_client.create_topic(Name=topic_name)
-
-        resp = await sns_client.list_topics()
-        topics = [t["TopicArn"] for t in resp.get("Topics", [])]
-
-        self.assertTrue(
-            any(topic_name in arn for arn in topics),
-            f"O tópico '{topic_name}' não foi encontrado."
-        )
+    async def test_create_and_list_topics(self):
+        arn = await self.repo.create_topic("topico-teste")
+        topics = await self.repo.list_topics()
+        self.assertIn(arn, topics)

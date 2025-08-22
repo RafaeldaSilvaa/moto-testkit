@@ -1,36 +1,37 @@
 import unittest
-
+import boto3
 from aws_testkit.src import MotoTestKit
+from aws_testkit.examples.s3.assincrono.s3_async_repository import S3AsyncRepository
 
 
-class TestS3WithMoto(unittest.IsolatedAsyncioTestCase):
+class TestS3RepositoryWithMoto(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
+        # Sobe o ambiente fake
         self.kit = MotoTestKit(auto_start=True, patch_aiobotocore=True)
+        self.endpoint = self.kit.get_client("s3").meta.endpoint_url
+        self.repo = S3AsyncRepository(endpoint_url=self.endpoint)
 
     async def asyncTearDown(self):
-        self.kit.close_clients()
+        await self.kit.close_async_clients()
         self.kit.stop()
 
-    async def test_s3_create_and_list_buckets(self):
-        s3_client = self.kit.get_client("s3")
+    async def test_create_and_list_buckets(self):
+        await self.repo.create_bucket("meu-bucket")
+        buckets = await self.repo.list_buckets()
+        self.assertIn("meu-bucket", buckets)
 
-        bucket_name = "meu-bucket"
-        s3_client.create_bucket(Bucket=bucket_name)
-
-        resp = s3_client.list_buckets()
-        buckets = [b["Name"] for b in resp.get("Buckets", [])]
-
-        self.assertIn(bucket_name, buckets)
-
-    async def test_s3_upload_and_download(self):
-        s3_client = self.kit.get_client("s3")
-
+    async def test_upload_and_download_file(self):
         bucket_name = "bucket-arquivos"
-        s3_client.create_bucket(Bucket=bucket_name)
+        key = "teste.txt"
+        content = b"conteudo"
 
-        s3_client.put_object(Bucket=bucket_name, Key="arquivo.txt", Body=b"conteudo")
+        # Cria bucket com o repo assíncrono
+        await self.repo.create_bucket(bucket_name)
 
-        obj = s3_client.get_object(Bucket=bucket_name, Key="arquivo.txt")
+        # Faz upload usando boto3 síncrono para evitar bug do aiobotocore no Moto
+        s3_sync = self.kit.get_client(service_name="s3")
+        s3_sync.put_object(Bucket=bucket_name, Key=key, Body=content)
+
+        obj = s3_sync.get_object(Bucket=bucket_name, Key=key)
         data = obj["Body"].read()
-
-        self.assertEqual(data, b"conteudo")
+        self.assertEqual(data, content)

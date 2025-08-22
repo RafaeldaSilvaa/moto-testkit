@@ -1,6 +1,7 @@
 import pytest_asyncio
 import pytest
 
+from aws_testkit.examples.sns.assincrono.sns_async_repository import SNSAsyncRepository
 from aws_testkit.src import MotoTestKit
 
 
@@ -12,13 +13,8 @@ async def moto_kit():
     kit.stop()
 
 @pytest.mark.asyncio
-async def test_sns_publish_and_list(moto_kit):
-    sns_client = await moto_kit.get_async_client("sns")
-
-    topic_arn = (await sns_client.create_topic(Name="meu-topico"))["TopicArn"]
-    await sns_client.publish(TopicArn=topic_arn, Message="Olá SNS!")
-
-    topics = await sns_client.list_topics()
-    arns = [t["TopicArn"] for t in topics.get("Topics", [])]
-
-    assert topic_arn in arns
+async def test_sns_create_and_list_topics(moto_kit):
+    repo = SNSAsyncRepository()
+    arn = await repo.create_topic("topico-teste")
+    topics = await repo.list_topics()
+    assert arn in topics

@@ -1,6 +1,7 @@
 import pytest
 import pytest_asyncio
 
+from aws_testkit.examples.stepfunctions.assincrono.stepfunctions_async_repository import StepFunctionsAsyncRepository
 from aws_testkit.src import MotoTestKit
 import json
 
@@ -11,25 +12,15 @@ async def moto_kit():
     kit.close_clients()
     kit.stop()
 
+
 @pytest.mark.asyncio
-async def test_stepfunctions_create_and_list(moto_kit):
-    sf_client = await moto_kit.get_async_client("stepfunctions")
-
-    definition = json.dumps({
-        "Comment": "Exemplo",
-        "StartAt": "Passo1",
-        "States": {
-            "Passo1": {"Type": "Succeed"}
-        }
-    })
-
-    arn = (await sf_client.create_state_machine(
-        name="MinhaStateMachine",
-        definition=definition,
-        roleArn="arn:aws:iam::123456789012:role/DummyRole"
-    ))["stateMachineArn"]
-
-    resp = await sf_client.list_state_machines()
-    arns = [sm["stateMachineArn"] for sm in resp.get("stateMachines", [])]
-
-    assert arn in arns
+async def test_stepfunctions_create_and_start_execution(moto_kit):
+    repo = StepFunctionsAsyncRepository()
+    definition = '{"StartAt": "Hello", "States": {"Hello": {"Type": "Pass", "End": true}}}'
+    sm = await repo.create_state_machine(
+        "MinhaStateMachine",
+        definition,
+        "arn:aws:iam::123456789012:role/DummyRole"
+    )
+    exec_resp = await repo.start_execution(sm["stateMachineArn"], "{}")
+    assert "executionArn" in exec_resp

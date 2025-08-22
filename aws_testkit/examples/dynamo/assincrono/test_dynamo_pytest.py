@@ -1,6 +1,7 @@
 import pytest
 import pytest_asyncio
 
+from aws_testkit.examples.dynamo.assincrono.dynamo import DynamoDBAsyncRepository
 from aws_testkit.src import MotoTestKit
 
 
@@ -12,25 +13,16 @@ async def moto_kit():
     kit.stop()
 
 
+
 @pytest.mark.asyncio
-async def test_dynamodb_put_and_get_item(moto_kit):
-    dynamo_client = await moto_kit.get_async_client("dynamodb")
-
-    await dynamo_client.create_table(
-        TableName="MinhaTabela",
-        KeySchema=[{"AttributeName": "id", "KeyType": "HASH"}],
-        AttributeDefinitions=[{"AttributeName": "id", "AttributeType": "S"}],
-        BillingMode="PAY_PER_REQUEST"
+async def test_dynamodb_put_and_get(moto_kit):
+    repo = DynamoDBAsyncRepository()
+    await repo.create_table(
+        "MinhaTabela",
+        [{"AttributeName": "id", "KeyType": "HASH"}],
+        [{"AttributeName": "id", "AttributeType": "S"}],
+        {"ReadCapacityUnits": 5, "WriteCapacityUnits": 5}
     )
-
-    await dynamo_client.put_item(
-        TableName="MinhaTabela",
-        Item={"id": {"S": "123"}, "nome": {"S": "Teste"}}
-    )
-
-    resp = await dynamo_client.get_item(
-        TableName="MinhaTabela",
-        Key={"id": {"S": "123"}}
-    )
-
-    assert resp["Item"]["nome"]["S"] == "Teste"
+    await repo.put_item("MinhaTabela", {"id": {"S": "123"}})
+    item = await repo.get_item("MinhaTabela", {"id": {"S": "123"}})
+    assert item["id"]["S"] == "123"

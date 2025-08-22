@@ -1,3 +1,5 @@
+import io
+
 import aioboto3
 from typing import Optional, List
 
@@ -17,6 +19,8 @@ class S3AsyncRepository:
             return [b["Name"] for b in resp.get("Buckets", [])]
 
     async def upload_file(self, bucket_name: str, key: str, body: bytes):
+        if isinstance(body, (bytes, bytearray)):
+            body = io.BytesIO(body)
         async with self.session.client("s3", endpoint_url=self.endpoint_url, region_name=self.region_name) as client:
             return await client.put_object(Bucket=bucket_name, Key=key, Body=body)
 

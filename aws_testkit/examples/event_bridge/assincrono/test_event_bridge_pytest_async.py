@@ -1,5 +1,6 @@
 import pytest
 
+from aws_testkit.examples.event_bridge.assincrono.eventbridge_async_repository import EventBridgeAsyncRepository
 from aws_testkit.src import MotoTestKit
 import pytest_asyncio
 
@@ -13,15 +14,7 @@ async def moto_kit():
 
 @pytest.mark.asyncio
 async def test_eventbridge_put_rule_and_list(moto_kit):
-    eb_client = await moto_kit.get_async_client("events")
-
-    rule_name = "minha-regra-teste"
-    await eb_client.put_rule(
-        Name=rule_name,
-        ScheduleExpression="rate(5 minutes)"
-    )
-
-    resp = await eb_client.list_rules()
-    rules = [r["Name"] for r in resp.get("Rules", [])]
-
-    assert rule_name in rules
+    repo = EventBridgeAsyncRepository()
+    await repo.put_rule("regra-teste", '{"source": ["app.test"]}')
+    regras = await repo.list_rules()
+    assert "regra-teste" in regras
