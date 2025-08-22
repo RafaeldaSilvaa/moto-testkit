@@ -1,10 +1,11 @@
 from __future__ import annotations
 import atexit
-import asyncio
-import inspect
 import logging
 import os
 import threading
+import inspect
+import functools
+import asyncio
 import weakref
 from typing import Optional
 from unittest.mock import patch
@@ -218,3 +219,35 @@ class AutoMotoTestKit(MotoTestKit):
         except AttributeError:
             pass
         self.stop()
+
+
+def with_moto(obj=None, *, auto_start=True, **kwargs):
+    def _decorate_func(func):
+        if inspect.iscoroutinefunction(func):
+            @functools.wraps(func)
+            async def wrapper(*args, **inner_kwargs):
+                async with AutoMotoTestKit(auto_start=auto_start, **kwargs) as mt:
+                    inner_kwargs['moto_testkit'] = mt
+                    return await func(*args, **inner_kwargs)
+        else:
+            @functools.wraps(func)
+            def wrapper(*args, **inner_kwargs):
+                with AutoMotoTestKit(auto_start=auto_start, **kwargs) as mt:
+                    inner_kwargs['moto_testkit'] = mt
+                    return func(*args, **inner_kwargs)
+
+        # remove moto_testkit da assinatura para o pytest não achar que é fixture
+        sig = inspect.signature(func)
+        params = [p for p in sig.parameters.values() if p.name != 'moto_testkit']
+        wrapper.__signature__ = inspect.Signature(parameters=params, return_annotation=sig.return_annotation)
+        return wrapper
+
+    def _decorate_class(cls):
+        for name, attr in list(cls.__dict__.items()):
+            if name.startswith("test_") and callable(attr):
+                setattr(cls, name, _decorate_func(attr))
+        return cls
+
+    if obj is None:
+        return lambda real_obj: _decorate_class(real_obj) if inspect.isclass(real_obj) else _decorate_func(real_obj)
+    return _decorate_class(obj) if inspect.isclass(obj) else _decorate_func(obj)
