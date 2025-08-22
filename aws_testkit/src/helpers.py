@@ -1,5 +1,7 @@
 # helpers.py
 from __future__ import annotations
+
+import io
 from typing import Any, Dict
 from pydantic import BaseModel, Field
 
@@ -24,7 +26,7 @@ class S3HelperTyped:
     def __init__(self, clients: ClientFactory) -> None:
         self._clients = clients
 
-    # sync
+    # synchronous
     def create_bucket(self, bucket: str) -> Dict[str, Any]:
         client = self._clients.get_client("s3")
         return client.create_bucket(Bucket=bucket)
@@ -38,10 +40,20 @@ class S3HelperTyped:
         resp = client.get_object(Bucket=bucket, Key=key)
         return resp["Body"].read()
 
-    # assincrono
-    async def put_object_async(self, model: S3ObjectModel) -> Dict[str, Any]:
+    # asynchronous
+    async def put_object_async(self, model: S3ObjectModel):
         client = await self._clients.get_async_client("s3")
-        return await client.put_object(Bucket=model.bucket, Key=model.key, Body=model.body)
+
+        body_data = model.body
+        # 🚑 Contorno: moto + aiobotocore → garante que é BytesIO
+        if isinstance(body_data, (bytes, bytearray)):
+            body_data = io.BytesIO(body_data)
+
+        return await client.put_object(
+            Bucket=model.bucket,
+            Key=model.key,
+            Body=body_data
+        )
 
     async def get_object_body_async(self, bucket: str, key: str) -> bytes:
         client = await self._clients.get_async_client("s3")

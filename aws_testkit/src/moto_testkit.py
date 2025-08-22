@@ -213,7 +213,7 @@ class AutoMotoTestKit(MotoTestKit):
             if hasattr(self, "close_async_clients"):
                 await self.close_async_clients()
             else:
-                # fallback para sync
+                # fallback para synchronous
                 self.close_clients()
         except AttributeError:
             pass
