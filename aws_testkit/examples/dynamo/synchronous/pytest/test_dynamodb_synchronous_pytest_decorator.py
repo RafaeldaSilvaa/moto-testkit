@@ -1,8 +1,7 @@
 from typing import List, Dict, Any
 
 from aws_testkit.examples.dynamo.synchronous.dynamodb_synchronous_repository import DynamoDBRepository
-from aws_testkit.src.moto_testkit import use_moto_testkit
-
+from aws_testkit.src.moto_testkit import use_moto_testkit, AutoMotoTestKit
 
 @use_moto_testkit(auto_start=True, patch_aiobotocore=False)
 def test_put_and_get_item_with_decorator(moto_testkit) -> None:
