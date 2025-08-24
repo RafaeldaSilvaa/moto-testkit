@@ -25,7 +25,7 @@ class TestDynamoDBRepositoryIsolated(unittest.TestCase):
         O decorador garante que um NOVO ambiente Moto seja iniciado para cada teste,
         o que nos permite criar a tabela para cada um.
         """
-        dynamodb_client = boto3.client("dynamodb")
+        dynamodb_client = self.moto_testkit.get_client("dynamodb")
 
         self.repo = DynamoDBRepository(
             endpoint_url=dynamodb_client.meta.endpoint_url
