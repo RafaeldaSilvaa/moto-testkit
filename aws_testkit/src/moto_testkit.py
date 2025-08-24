@@ -6,6 +6,7 @@ import threading
 import inspect
 import functools
 import asyncio
+import unittest
 import weakref
 from typing import Optional
 from unittest.mock import patch
@@ -220,31 +221,46 @@ class AutoMotoTestKit(MotoTestKit):
             pass
         self.stop()
 
+def use_moto_testkit(obj=None, *, auto_start=True, **kwargs):
+    def _inject_into_self(args, mt):
+        """Injeta no self quando rodando unittest.TestCase."""
+        if args and isinstance(args[0], unittest.TestCase):
+            setattr(args[0], "moto_testkit", mt)
 
-def with_moto(obj=None, *, auto_start=True, **kwargs):
     def _decorate_func(func):
+        if getattr(func, "_is_moto_wrapped", False):
+            return func  # evita decorar duas vezes
+
         if inspect.iscoroutinefunction(func):
             @functools.wraps(func)
             async def wrapper(*args, **inner_kwargs):
                 async with AutoMotoTestKit(auto_start=auto_start, **kwargs) as mt:
-                    inner_kwargs['moto_testkit'] = mt
+                    _inject_into_self(args, mt)
+                    inner_kwargs.setdefault("moto_testkit", mt)
                     return await func(*args, **inner_kwargs)
         else:
             @functools.wraps(func)
             def wrapper(*args, **inner_kwargs):
                 with AutoMotoTestKit(auto_start=auto_start, **kwargs) as mt:
-                    inner_kwargs['moto_testkit'] = mt
+                    _inject_into_self(args, mt)
+                    inner_kwargs.setdefault("moto_testkit", mt)
                     return func(*args, **inner_kwargs)
 
-        # remove moto_testkit da assinatura para o pytest não achar que é fixture
+        # Protege contra assinatura com *args/**kwargs
         sig = inspect.signature(func)
-        params = [p for p in sig.parameters.values() if p.name != 'moto_testkit']
-        wrapper.__signature__ = inspect.Signature(parameters=params, return_annotation=sig.return_annotation)
+        if all(p.kind not in (p.VAR_POSITIONAL, p.VAR_KEYWORD) for p in sig.parameters.values()):
+            params = [p for p in sig.parameters.values() if p.name != "moto_testkit"]
+            wrapper.__signature__ = inspect.Signature(parameters=params, return_annotation=sig.return_annotation)
+
+        wrapper._is_moto_wrapped = True
         return wrapper
 
     def _decorate_class(cls):
         for name, attr in list(cls.__dict__.items()):
-            if name.startswith("test_") and callable(attr):
+            if callable(attr) and (
+                name.startswith("test_")
+                or name in ("setUp", "tearDown", "setUpClass", "tearDownClass")
+            ):
                 setattr(cls, name, _decorate_func(attr))
         return cls
 

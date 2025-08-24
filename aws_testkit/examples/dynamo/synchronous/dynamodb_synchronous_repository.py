@@ -1,4 +1,4 @@
-# dynamodb_repository.py
+# dynamodb_synchronous_repository.py
 import boto3
 from botocore.exceptions import ClientError
 from typing import List, Dict, Optional

@@ -1,7 +1,7 @@
 # test_dynamodb_pytest.py
 import pytest
 from aws_testkit.src import MotoTestKit
-from dynamodb_repository import DynamoDBRepository
+from dynamodb_synchronous_repository import DynamoDBRepository
 
 
 @pytest.fixture
