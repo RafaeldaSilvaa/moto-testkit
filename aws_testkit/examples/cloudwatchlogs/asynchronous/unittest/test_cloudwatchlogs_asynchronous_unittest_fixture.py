@@ -1,9 +1,8 @@
 import unittest
-from typing import List, Dict, Any
+from typing import Any, Dict, List
 
-from aws_testkit.examples.cloudwatchlogs.asynchronous.cloudwatchlogs_asynchronous_repository import (
-    CloudWatchLogsAsyncRepository,
-)
+from aws_testkit.examples.cloudwatchlogs.asynchronous.cloudwatchlogs_asynchronous_repository import \
+    CloudWatchLogsAsyncRepository
 from aws_testkit.src import MotoTestKit
 
 
@@ -36,9 +35,13 @@ class TestCloudWatchLogsFixtureMotoTestKit(unittest.IsolatedAsyncioTestCase):
         await logs_repo.create_log_stream("grupo-stream-fixture", "stream-fixture")
 
         logs_client = await self.moto_testkit.get_async_client("logs")
-        resp = await logs_client.describe_log_streams(logGroupName="grupo-stream-fixture")
+        resp = await logs_client.describe_log_streams(
+            logGroupName="grupo-stream-fixture"
+        )
 
-        self.assertIn("stream-fixture", [s["logStreamName"] for s in resp.get("logStreams", [])])
+        self.assertIn(
+            "stream-fixture", [s["logStreamName"] for s in resp.get("logStreams", [])]
+        )
 
     async def test_put_log_events(self) -> None:
         """Create a log group and stream, put events, verify sequence token."""
@@ -46,7 +49,9 @@ class TestCloudWatchLogsFixtureMotoTestKit(unittest.IsolatedAsyncioTestCase):
         logs_repo = CloudWatchLogsAsyncRepository(endpoint_url=endpoint_url)
 
         await logs_repo.create_log_group("grupo-logs-eventos-fixture")
-        await logs_repo.create_log_stream("grupo-logs-eventos-fixture", "stream-eventos-fixture")
+        await logs_repo.create_log_stream(
+            "grupo-logs-eventos-fixture", "stream-eventos-fixture"
+        )
 
         resp = await logs_repo.put_log_events(
             "grupo-logs-eventos-fixture",

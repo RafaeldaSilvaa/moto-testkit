@@ -1,6 +1,8 @@
 import unittest
 from typing import Any, Dict
-from aws_testkit.examples.dynamo.asynchronous.dynamo_asynchronous_repository import DynamoDBAsyncRepository
+
+from aws_testkit.examples.dynamo.asynchronous.dynamo_asynchronous_repository import \
+    DynamoDBAsyncRepository
 from aws_testkit.src import MotoTestKit
 
 
@@ -23,5 +25,7 @@ class TestDynamoDBAsyncRepositoryWithFixture(unittest.IsolatedAsyncioTestCase):
             {"ReadCapacityUnits": 5, "WriteCapacityUnits": 5},
         )
         await self.repo.put_item("MinhaTabela", {"id": {"S": "123"}})
-        item: Dict[str, Any] = await self.repo.get_item("MinhaTabela", {"id": {"S": "123"}})
+        item: Dict[str, Any] = await self.repo.get_item(
+            "MinhaTabela", {"id": {"S": "123"}}
+        )
         self.assertEqual(item["id"]["S"], "123")

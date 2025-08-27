@@ -1,6 +1,7 @@
 import unittest
 
-from aws_testkit.examples.sqs.synchronous.sqs_synchronous_repository import SQSRepository
+from aws_testkit.examples.sqs.synchronous.sqs_synchronous_repository import \
+    SQSRepository
 from aws_testkit.src import MotoTestKit
 
 

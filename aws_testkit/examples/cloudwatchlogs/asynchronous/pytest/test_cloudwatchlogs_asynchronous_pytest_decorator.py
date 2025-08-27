@@ -1,9 +1,9 @@
-import pytest
-from typing import List, Dict, Any
+from typing import Any, Dict, List
 
-from aws_testkit.examples.cloudwatchlogs.asynchronous.cloudwatchlogs_asynchronous_repository import (
-    CloudWatchLogsAsyncRepository,
-)
+import pytest
+
+from aws_testkit.examples.cloudwatchlogs.asynchronous.cloudwatchlogs_asynchronous_repository import \
+    CloudWatchLogsAsyncRepository
 from aws_testkit.src import MotoTestKit
 from aws_testkit.src.moto_testkit import use_moto_testkit
 
@@ -43,7 +43,9 @@ async def test_create_log_stream(moto_testkit: MotoTestKit) -> None:
     # Assert using direct client
     logs_client = await moto_testkit.get_async_client("logs")
     resp = await logs_client.describe_log_streams(logGroupName="grupo-stream-decorator")
-    assert "stream-decorator" in [s["logStreamName"] for s in resp.get("logStreams", [])]
+    assert "stream-decorator" in [
+        s["logStreamName"] for s in resp.get("logStreams", [])
+    ]
 
 
 @pytest.mark.asyncio
@@ -57,7 +59,9 @@ async def test_put_log_events(moto_testkit: MotoTestKit) -> None:
 
     # Arrange
     await logs_repo.create_log_group("grupo-logs-eventos-decorator")
-    await logs_repo.create_log_stream("grupo-logs-eventos-decorator", "stream-eventos-decorator")
+    await logs_repo.create_log_stream(
+        "grupo-logs-eventos-decorator", "stream-eventos-decorator"
+    )
 
     # Act
     resp = await logs_repo.put_log_events(

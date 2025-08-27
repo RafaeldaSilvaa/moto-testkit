@@ -1,11 +1,16 @@
+from typing import List, Optional
+
 import boto3
 from botocore.exceptions import ClientError
-from typing import List, Optional
 
 
 class S3Repository:
-    def __init__(self, endpoint_url: Optional[str] = None, region_name: str = "us-east-1"):
-        self.client = boto3.client("s3", endpoint_url=endpoint_url, region_name=region_name)
+    def __init__(
+        self, endpoint_url: Optional[str] = None, region_name: str = "us-east-1"
+    ):
+        self.client = boto3.client(
+            "s3", endpoint_url=endpoint_url, region_name=region_name
+        )
 
     def create_bucket(self, bucket_name: str):
         return self.client.create_bucket(Bucket=bucket_name)

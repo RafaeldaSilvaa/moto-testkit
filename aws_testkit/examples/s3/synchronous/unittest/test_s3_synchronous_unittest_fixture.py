@@ -1,13 +1,16 @@
 import unittest
 
-from aws_testkit.examples.s3.synchronous.s3_synchronous_repository import S3Repository
+from aws_testkit.examples.s3.synchronous.s3_synchronous_repository import \
+    S3Repository
 from aws_testkit.src import MotoTestKit
 
 
 class TestS3RepositoryFixtureMotoTestKit(unittest.TestCase):
     def setUp(self) -> None:
         self.moto_testkit: MotoTestKit = MotoTestKit(auto_start=True)
-        self.repository: S3Repository = S3Repository(endpoint_url=self.moto_testkit.get_client("s3").meta.endpoint_url)
+        self.repository: S3Repository = S3Repository(
+            endpoint_url=self.moto_testkit.get_client("s3").meta.endpoint_url
+        )
 
     def tearDown(self) -> None:
         self.moto_testkit.stop()

@@ -1,7 +1,8 @@
 import pytest
 from botocore.exceptions import ClientError
 
-from aws_testkit.examples.rds.synchronous.rds_synchronous_repository import RDSRepository
+from aws_testkit.examples.rds.synchronous.rds_synchronous_repository import \
+    RDSRepository
 from aws_testkit.src.moto_testkit import AutoMotoTestKit, use_moto_testkit
 
 

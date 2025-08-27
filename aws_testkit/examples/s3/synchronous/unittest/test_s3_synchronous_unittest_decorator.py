@@ -1,13 +1,16 @@
 import unittest
 
-from aws_testkit.examples.s3.synchronous.s3_synchronous_repository import S3Repository
-from aws_testkit.src.moto_testkit import use_moto_testkit, AutoMotoTestKit
+from aws_testkit.examples.s3.synchronous.s3_synchronous_repository import \
+    S3Repository
+from aws_testkit.src.moto_testkit import AutoMotoTestKit, use_moto_testkit
 
 
 class TestS3RepositoryWithDecorator(unittest.TestCase):
     @use_moto_testkit(auto_start=True)
     def test_create_and_list_bucket(self, moto_testkit: AutoMotoTestKit) -> None:
-        repository = S3Repository(endpoint_url=moto_testkit.get_client("s3").meta.endpoint_url)
+        repository = S3Repository(
+            endpoint_url=moto_testkit.get_client("s3").meta.endpoint_url
+        )
         bucket_name: str = "my-bucket"
 
         repository.create_bucket(bucket_name)
@@ -16,7 +19,9 @@ class TestS3RepositoryWithDecorator(unittest.TestCase):
 
     @use_moto_testkit(auto_start=True)
     def test_upload_and_get_object(self, moto_testkit: AutoMotoTestKit) -> None:
-        repository = S3Repository(endpoint_url=moto_testkit.get_client("s3").meta.endpoint_url)
+        repository = S3Repository(
+            endpoint_url=moto_testkit.get_client("s3").meta.endpoint_url
+        )
         bucket_name: str = "my-bucket"
         key: str = "file.txt"
         content: bytes = b"hello"
@@ -28,7 +33,9 @@ class TestS3RepositoryWithDecorator(unittest.TestCase):
 
     @use_moto_testkit(auto_start=True)
     def test_delete_object(self, moto_testkit: AutoMotoTestKit) -> None:
-        repository = S3Repository(endpoint_url=moto_testkit.get_client("s3").meta.endpoint_url)
+        repository = S3Repository(
+            endpoint_url=moto_testkit.get_client("s3").meta.endpoint_url
+        )
         bucket_name: str = "my-bucket"
         key: str = "file.txt"
         content: bytes = b"bye"

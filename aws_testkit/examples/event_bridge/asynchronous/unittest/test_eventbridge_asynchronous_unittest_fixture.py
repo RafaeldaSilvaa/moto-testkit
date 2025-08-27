@@ -1,13 +1,15 @@
 import unittest
+
+from aws_testkit.examples.event_bridge.asynchronous.eventbridge_asynchronous_repository import \
+    EventBridgeAsyncRepository
 from aws_testkit.src import MotoTestKit
-from aws_testkit.examples.event_bridge.asynchronous.eventbridge_asynchronous_repository import (
-    EventBridgeAsyncRepository,
-)
 
 
 class TestEventBridgeRepositoryFixtureMotoTestKit(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self) -> None:
-        self.moto_testkit: MotoTestKit = MotoTestKit(auto_start=True, patch_aiobotocore=True)
+        self.moto_testkit: MotoTestKit = MotoTestKit(
+            auto_start=True, patch_aiobotocore=True
+        )
         self.repository: EventBridgeAsyncRepository = EventBridgeAsyncRepository()
 
     async def asyncTearDown(self) -> None:

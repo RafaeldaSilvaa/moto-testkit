@@ -1,17 +1,19 @@
 from __future__ import annotations
+
+import asyncio
 import atexit
+import functools
+import inspect
 import logging
 import os
 import threading
-import inspect
-import functools
-import asyncio
 import unittest
 import weakref
 from typing import Optional
 from unittest.mock import patch
-from moto import mock_aws
+
 from botocore.response import StreamingBody
+from moto import mock_aws
 
 from .clients import ClientFactory
 
@@ -38,7 +40,9 @@ class MotoTestKit:
         self._logger = logger or _default_logger
         if verbose and not logger:
             handler = logging.StreamHandler()
-            handler.setFormatter(logging.Formatter("[aws_testkit] %(levelname)s - %(message)s"))
+            handler.setFormatter(
+                logging.Formatter("[aws_testkit] %(levelname)s - %(message)s")
+            )
             self._logger.addHandler(handler)
             self._logger.setLevel(logging.DEBUG)
 
@@ -168,13 +172,17 @@ class MotoTestKit:
                 response_dict["body"] = await _await_or_value(content)
             return response_dict
 
-        patcher = patch("aiobotocore.endpoint.convert_to_response_dict", _convert_to_response_dict_compat)
+        patcher = patch(
+            "aiobotocore.endpoint.convert_to_response_dict",
+            _convert_to_response_dict_compat,
+        )
         patcher.start()
         return patcher
 
     @staticmethod
     def _patch_crc32_checker():
         import binascii
+
         from aiobotocore.retryhandler import AioCRC32Checker
 
         original = AioCRC32Checker._check_response
@@ -192,7 +200,10 @@ class MotoTestKit:
                 actual_crc32 = binascii.crc32(data) & 0xFFFFFFFF
                 return actual_crc32 != int(expected_crc)
 
-        patcher = patch("aiobotocore.retryhandler.AioCRC32Checker._check_response", _check_response_compat)
+        patcher = patch(
+            "aiobotocore.retryhandler.AioCRC32Checker._check_response",
+            _check_response_compat,
+        )
         patcher.start()
         return patcher
 
@@ -258,9 +269,14 @@ def use_moto_testkit(obj=None, *, auto_start=True, **kwargs):
 
         # Protege contra assinatura com *args/**kwargs
         sig = inspect.signature(func)
-        if all(p.kind not in (p.VAR_POSITIONAL, p.VAR_KEYWORD) for p in sig.parameters.values()):
+        if all(
+            p.kind not in (p.VAR_POSITIONAL, p.VAR_KEYWORD)
+            for p in sig.parameters.values()
+        ):
             params = [p for p in sig.parameters.values() if p.name != "moto_testkit"]
-            wrapper.__signature__ = inspect.Signature(parameters=params, return_annotation=sig.return_annotation)
+            wrapper.__signature__ = inspect.Signature(
+                parameters=params, return_annotation=sig.return_annotation
+            )
 
         wrapper._is_moto_wrapped = True
         return wrapper
@@ -268,11 +284,16 @@ def use_moto_testkit(obj=None, *, auto_start=True, **kwargs):
     def _decorate_class(cls):
         for name, attr in list(cls.__dict__.items()):
             if callable(attr) and (
-                name.startswith("test_") or name in ("setUp", "tearDown", "setUpClass", "tearDownClass")
+                name.startswith("test_")
+                or name in ("setUp", "tearDown", "setUpClass", "tearDownClass")
             ):
                 setattr(cls, name, _decorate_func(attr))
         return cls
 
     if obj is None:
-        return lambda real_obj: _decorate_class(real_obj) if inspect.isclass(real_obj) else _decorate_func(real_obj)
+        return lambda real_obj: (
+            _decorate_class(real_obj)
+            if inspect.isclass(real_obj)
+            else _decorate_func(real_obj)
+        )
     return _decorate_class(obj) if inspect.isclass(obj) else _decorate_func(obj)

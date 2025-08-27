@@ -1,6 +1,7 @@
 import sqlite3
 import time
 from typing import Any
+
 import boto3
 
 
@@ -8,7 +9,9 @@ class RDSRepository:
     def __init__(self, endpoint_url: str, region_name: str = "eu-central-1"):
         self.endpoint_url = endpoint_url
         self.region_name = region_name
-        self._client = boto3.client("rds", region_name=self.region_name, endpoint_url=self.endpoint_url)
+        self._client = boto3.client(
+            "rds", region_name=self.region_name, endpoint_url=self.endpoint_url
+        )
 
     def create_instance(
         self,
@@ -52,7 +55,9 @@ class RDSRepository:
         return instance
 
     def describe_instance(self, db_instance_identifier: str) -> dict | None:
-        resp = self._client.describe_db_instances(DBInstanceIdentifier=db_instance_identifier)
+        resp = self._client.describe_db_instances(
+            DBInstanceIdentifier=db_instance_identifier
+        )
         items = resp.get("DBInstances", [])
         return items[0] if items else None
 
@@ -63,8 +68,13 @@ class RDSRepository:
             out.extend(page.get("DBInstances", []))
         return out
 
-    def delete_instance(self, *, db_instance_identifier: str, skip_final_snapshot: bool = True) -> dict:
-        params = {"DBInstanceIdentifier": db_instance_identifier, "SkipFinalSnapshot": skip_final_snapshot}
+    def delete_instance(
+        self, *, db_instance_identifier: str, skip_final_snapshot: bool = True
+    ) -> dict:
+        params = {
+            "DBInstanceIdentifier": db_instance_identifier,
+            "SkipFinalSnapshot": skip_final_snapshot,
+        }
         resp = self._client.delete_db_instance(**params)
         return resp.get("DBInstance", {})
 
@@ -76,13 +86,17 @@ class RDSRepository:
 
     def create_table_sql(self, table_name: str, columns_sql: str):
         with self._db_conn:
-            self._db_conn.execute(f"CREATE TABLE IF NOT EXISTS {table_name} ({columns_sql});")
+            self._db_conn.execute(
+                f"CREATE TABLE IF NOT EXISTS {table_name} ({columns_sql});"
+            )
 
     def insert_record(self, table_name: str, columns: list[str], values: tuple):
         cols = ", ".join(columns)
         placeholders = ", ".join(["?"] * len(values))
         with self._db_conn:
-            self._db_conn.execute(f"INSERT INTO {table_name} ({cols}) VALUES ({placeholders});", values)
+            self._db_conn.execute(
+                f"INSERT INTO {table_name} ({cols}) VALUES ({placeholders});", values
+            )
 
     def fetch_all(self, table_name: str):
         cur = self._db_conn.execute(f"SELECT * FROM {table_name};")

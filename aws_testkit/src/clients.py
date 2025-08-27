@@ -1,10 +1,11 @@
-import threading
 import asyncio
-from typing import Any, Dict, Tuple
+import threading
 from contextlib import suppress
-from botocore.client import BaseClient
-import boto3
+from typing import Any, Dict, Tuple
+
 import aioboto3
+import boto3
+from botocore.client import BaseClient
 
 
 class ClientFactory:
@@ -58,7 +59,9 @@ class ClientFactory:
     async def close_async_clients(self) -> None:
         """Fecha todos os clientes aioboto3 criados."""
         async with self._async_lock:
-            for svc, (_session, client_cm, _client) in list(self._async_clients.items()):
+            for svc, (_session, client_cm, _client) in list(
+                self._async_clients.items()
+            ):
                 with suppress(Exception):
                     await client_cm.__aexit__(None, None, None)
                 self._async_clients.pop(svc, None)

@@ -1,11 +1,15 @@
 import pytest
-from aws_testkit.examples.s3.asynchronous.s3_asynchronous_repository import S3AsyncRepository
-from aws_testkit.src.moto_testkit import use_moto_testkit, AutoMotoTestKit
+
+from aws_testkit.examples.s3.asynchronous.s3_asynchronous_repository import \
+    S3AsyncRepository
+from aws_testkit.src.moto_testkit import AutoMotoTestKit, use_moto_testkit
 
 
 @pytest.mark.asyncio
 @use_moto_testkit(auto_start=True, patch_aiobotocore=True)
-async def test_create_and_list_buckets_with_decorator(moto_testkit: AutoMotoTestKit) -> None:
+async def test_create_and_list_buckets_with_decorator(
+    moto_testkit: AutoMotoTestKit,
+) -> None:
     endpoint_url = moto_testkit.get_client("s3").meta.endpoint_url
     repository = S3AsyncRepository(endpoint_url=endpoint_url)
     bucket_name: str = "meu-bucket"
@@ -18,7 +22,9 @@ async def test_create_and_list_buckets_with_decorator(moto_testkit: AutoMotoTest
 
 @pytest.mark.asyncio
 @use_moto_testkit(auto_start=True, patch_aiobotocore=True)
-async def test_upload_and_download_file_with_decorator(moto_testkit: AutoMotoTestKit) -> None:
+async def test_upload_and_download_file_with_decorator(
+    moto_testkit: AutoMotoTestKit,
+) -> None:
     endpoint_url = moto_testkit.get_client("s3").meta.endpoint_url
     repository = S3AsyncRepository(endpoint_url=endpoint_url)
     bucket_name: str = "bucket-arquivos"

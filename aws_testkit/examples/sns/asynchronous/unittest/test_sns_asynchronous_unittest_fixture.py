@@ -1,11 +1,15 @@
 import unittest
-from aws_testkit.examples.sns.asynchronous.sns_asynchronous_repository import SNSAsyncRepository
+
+from aws_testkit.examples.sns.asynchronous.sns_asynchronous_repository import \
+    SNSAsyncRepository
 from aws_testkit.src import MotoTestKit
 
 
 class TestSNSRepositoryFixtureMotoTestKit(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self) -> None:
-        self.moto_testkit: MotoTestKit = MotoTestKit(auto_start=True, patch_aiobotocore=True)
+        self.moto_testkit: MotoTestKit = MotoTestKit(
+            auto_start=True, patch_aiobotocore=True
+        )
         self.repository: SNSAsyncRepository = SNSAsyncRepository()
 
     async def asyncTearDown(self) -> None:

@@ -1,6 +1,7 @@
 import unittest
 
-from aws_testkit.examples.stepfunctions.synchronous.stepfunctions_synchronous_repository import StepFunctionsRepository
+from aws_testkit.examples.stepfunctions.synchronous.stepfunctions_synchronous_repository import \
+    StepFunctionsRepository
 from aws_testkit.src import MotoTestKit
 
 
@@ -15,7 +16,11 @@ class TestStepFunctionsRepositoryFixtureMotoTestKit(unittest.TestCase):
         self.moto_testkit.stop()
 
     def test_create_state_machine(self) -> None:
-        definition = '{"StartAt": "Hello", "States": {"Hello": {"Type": "Pass", "End": true}}}'
+        definition = (
+            '{"StartAt": "Hello", "States": {"Hello": {"Type": "Pass", "End": true}}}'
+        )
         role_arn = "arn:aws:iam::123456789012:role/DummyRole"
-        sm = self.repository.create_state_machine("MyStateMachine", definition, role_arn)
+        sm = self.repository.create_state_machine(
+            "MyStateMachine", definition, role_arn
+        )
         self.assertIn("stateMachineArn", sm)

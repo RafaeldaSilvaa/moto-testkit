@@ -1,10 +1,13 @@
 import unittest
+
 from aws_testkit.src.moto_testkit import MotoTestKit
 
 
 class TestSQSRepositoryFixtureMotoTestKit(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self) -> None:
-        self.moto_testkit: MotoTestKit = MotoTestKit(auto_start=True, patch_aiobotocore=True)
+        self.moto_testkit: MotoTestKit = MotoTestKit(
+            auto_start=True, patch_aiobotocore=True
+        )
 
     async def asyncTearDown(self) -> None:
         await self.moto_testkit.close_async_clients()
@@ -25,7 +28,9 @@ class TestSQSRepositoryFixtureMotoTestKit(unittest.IsolatedAsyncioTestCase):
         queue_url = create_resp["QueueUrl"]
 
         await sqs_client.send_message(QueueUrl=queue_url, MessageBody="Olá, mundo!")
-        recv_resp = await sqs_client.receive_message(QueueUrl=queue_url, MaxNumberOfMessages=1)
+        recv_resp = await sqs_client.receive_message(
+            QueueUrl=queue_url, MaxNumberOfMessages=1
+        )
         messages = recv_resp.get("Messages", [])
         self.assertEqual(len(messages), 1)
         self.assertEqual(messages[0]["Body"], "Olá, mundo!")

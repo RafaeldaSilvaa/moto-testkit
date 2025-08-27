@@ -1,6 +1,8 @@
 import unittest
-from aws_testkit.examples.iam.asynchronous.iam_asynchronous_repository import IAMAsyncRepository
-from aws_testkit.src.moto_testkit import use_moto_testkit, AutoMotoTestKit
+
+from aws_testkit.examples.iam.asynchronous.iam_asynchronous_repository import \
+    IAMAsyncRepository
+from aws_testkit.src.moto_testkit import AutoMotoTestKit, use_moto_testkit
 
 
 class TestIAMRepositoryWithDecorator(unittest.IsolatedAsyncioTestCase):

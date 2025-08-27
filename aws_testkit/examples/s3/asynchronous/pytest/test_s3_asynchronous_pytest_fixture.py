@@ -1,7 +1,8 @@
 import pytest
 import pytest_asyncio
 
-from aws_testkit.examples.s3.asynchronous.s3_asynchronous_repository import S3AsyncRepository
+from aws_testkit.examples.s3.asynchronous.s3_asynchronous_repository import \
+    S3AsyncRepository
 from aws_testkit.src import MotoTestKit
 
 

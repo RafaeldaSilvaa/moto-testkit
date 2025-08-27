@@ -1,6 +1,6 @@
-import unittest
 import asyncio
-from unittest.mock import patch, MagicMock, AsyncMock
+import unittest
+from unittest.mock import AsyncMock, MagicMock, patch
 
 from aws_testkit.src import ClientFactory
 

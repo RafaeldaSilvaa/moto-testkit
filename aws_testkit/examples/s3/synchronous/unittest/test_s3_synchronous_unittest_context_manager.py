@@ -1,13 +1,16 @@
 import unittest
 
-from aws_testkit.examples.s3.synchronous.s3_synchronous_repository import S3Repository
+from aws_testkit.examples.s3.synchronous.s3_synchronous_repository import \
+    S3Repository
 from aws_testkit.src.moto_testkit import AutoMotoTestKit
 
 
 class TestS3RepositoryWithContextManager(unittest.TestCase):
     def test_create_and_list_bucket(self) -> None:
         with AutoMotoTestKit(auto_start=True) as moto_testkit:
-            repository = S3Repository(endpoint_url=moto_testkit.get_client("s3").meta.endpoint_url)
+            repository = S3Repository(
+                endpoint_url=moto_testkit.get_client("s3").meta.endpoint_url
+            )
             bucket_name: str = "my-bucket"
 
             repository.create_bucket(bucket_name)
@@ -16,7 +19,9 @@ class TestS3RepositoryWithContextManager(unittest.TestCase):
 
     def test_upload_and_get_object(self) -> None:
         with AutoMotoTestKit(auto_start=True) as moto_testkit:
-            repository = S3Repository(endpoint_url=moto_testkit.get_client("s3").meta.endpoint_url)
+            repository = S3Repository(
+                endpoint_url=moto_testkit.get_client("s3").meta.endpoint_url
+            )
             bucket_name: str = "my-bucket"
             key: str = "file.txt"
             content: bytes = b"hello"
@@ -28,7 +33,9 @@ class TestS3RepositoryWithContextManager(unittest.TestCase):
 
     def test_delete_object(self) -> None:
         with AutoMotoTestKit(auto_start=True) as moto_testkit:
-            repository = S3Repository(endpoint_url=moto_testkit.get_client("s3").meta.endpoint_url)
+            repository = S3Repository(
+                endpoint_url=moto_testkit.get_client("s3").meta.endpoint_url
+            )
             bucket_name: str = "my-bucket"
             key: str = "file.txt"
             content: bytes = b"bye"

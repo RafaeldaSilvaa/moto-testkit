@@ -1,9 +1,8 @@
 import unittest
-from typing import List, Dict, Any
+from typing import Any, Dict, List
 
-from aws_testkit.examples.cloudwatchlogs.synchronous.cloudwatchlogs_synchronous_repository import (
-    CloudWatchLogsRepository,
-)
+from aws_testkit.examples.cloudwatchlogs.synchronous.cloudwatchlogs_synchronous_repository import \
+    CloudWatchLogsRepository
 from aws_testkit.src import MotoTestKit
 
 
@@ -12,7 +11,9 @@ class TestCloudWatchLogsRepositoryWithFixture(unittest.TestCase):
 
     def setUp(self) -> None:
         self.kit = MotoTestKit(auto_start=True, patch_aiobotocore=False)
-        self.repo = CloudWatchLogsRepository(endpoint_url=self.kit.get_client("logs").meta.endpoint_url)
+        self.repo = CloudWatchLogsRepository(
+            endpoint_url=self.kit.get_client("logs").meta.endpoint_url
+        )
 
     def tearDown(self) -> None:
         self.kit.stop()
@@ -28,5 +29,7 @@ class TestCloudWatchLogsRepositoryWithFixture(unittest.TestCase):
         """Should return a sequence token when log events are put."""
         self.repo.create_log_group("my-group")
         self.repo.create_log_stream("my-group", "my-stream")
-        resp: Dict[str, Any] = self.repo.put_log_events("my-group", "my-stream", ["msg1", "msg2"])
+        resp: Dict[str, Any] = self.repo.put_log_events(
+            "my-group", "my-stream", ["msg1", "msg2"]
+        )
         self.assertIn("nextSequenceToken", resp)

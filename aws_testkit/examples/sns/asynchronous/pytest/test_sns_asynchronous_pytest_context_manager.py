@@ -1,6 +1,7 @@
 import pytest
 
-from aws_testkit.examples.sns.asynchronous.sns_asynchronous_repository import SNSAsyncRepository
+from aws_testkit.examples.sns.asynchronous.sns_asynchronous_repository import \
+    SNSAsyncRepository
 from aws_testkit.src.moto_testkit import AutoMotoTestKit
 
 

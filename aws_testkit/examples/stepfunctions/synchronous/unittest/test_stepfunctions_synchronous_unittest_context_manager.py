@@ -1,6 +1,7 @@
 import unittest
 
-from aws_testkit.examples.stepfunctions.synchronous.stepfunctions_synchronous_repository import StepFunctionsRepository
+from aws_testkit.examples.stepfunctions.synchronous.stepfunctions_synchronous_repository import \
+    StepFunctionsRepository
 from aws_testkit.src.moto_testkit import AutoMotoTestKit
 
 

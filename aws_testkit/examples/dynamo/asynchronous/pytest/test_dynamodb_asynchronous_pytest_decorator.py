@@ -1,7 +1,9 @@
-import pytest
 from typing import Any, Dict
 
-from aws_testkit.examples.dynamo.asynchronous.dynamo_asynchronous_repository import DynamoDBAsyncRepository
+import pytest
+
+from aws_testkit.examples.dynamo.asynchronous.dynamo_asynchronous_repository import \
+    DynamoDBAsyncRepository
 from aws_testkit.src.moto_testkit import use_moto_testkit
 
 

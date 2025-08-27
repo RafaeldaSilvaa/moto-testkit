@@ -1,8 +1,10 @@
-import pytest
-import pytest_asyncio
 import asyncio
 
-from aws_testkit.examples.sqs.asynchronous.sqs_asynchronous_client import SQSAsyncClient
+import pytest
+import pytest_asyncio
+
+from aws_testkit.examples.sqs.asynchronous.sqs_asynchronous_client import \
+    SQSAsyncClient
 from aws_testkit.src import MotoTestKit
 
 AWS_REGION = "us-east-1"
@@ -24,7 +26,9 @@ async def test_sqs_basic_flow_with_fixture(moto_testkit_fixture: MotoTestKit) ->
     queue = sqs_client.create_queue(QueueName="test-queue")
     queue_url = queue["QueueUrl"]
 
-    my_sqs = SQSAsyncClient(region_name=moto_testkit_fixture.region, queue_url=queue_url)
+    my_sqs = SQSAsyncClient(
+        region_name=moto_testkit_fixture.region, queue_url=queue_url
+    )
     send_resp = await my_sqs.send_message("Hello MotoTestKit!")
     assert "MessageId" in send_resp
 
@@ -38,7 +42,9 @@ async def test_sqs_basic_flow_with_fixture(moto_testkit_fixture: MotoTestKit) ->
 
 
 @pytest.mark.asyncio
-async def test_sqs_send_receive_delete_with_fixture(moto_testkit_fixture: MotoTestKit) -> None:
+async def test_sqs_send_receive_delete_with_fixture(
+    moto_testkit_fixture: MotoTestKit,
+) -> None:
     sqs_client_boto = await moto_testkit_fixture.get_async_client("sqs")
     create_resp = await sqs_client_boto.create_queue(QueueName=QUEUE_NAME)
     queue_url = create_resp["QueueUrl"]

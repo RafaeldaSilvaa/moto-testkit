@@ -1,14 +1,18 @@
 import pytest
 from botocore.exceptions import ClientError
+
+from aws_testkit.examples.rds.synchronous.rds_synchronous_repository import \
+    RDSRepository
 from aws_testkit.src import MotoTestKit
-from aws_testkit.examples.rds.synchronous.rds_synchronous_repository import RDSRepository
 
 
 @pytest.fixture
 def moto_testkit_fixture() -> RDSRepository:
     """Inicializa MotoTestKit e repositório RDS para testes."""
     moto_testkit = MotoTestKit(auto_start=True)
-    repository = RDSRepository(endpoint_url=moto_testkit.get_client("rds").meta.endpoint_url)
+    repository = RDSRepository(
+        endpoint_url=moto_testkit.get_client("rds").meta.endpoint_url
+    )
     repository.connect_db_sqlite()
     yield repository
     moto_testkit.stop()
@@ -76,7 +80,9 @@ def test_create_multiple_instances(moto_testkit_fixture: RDSRepository) -> None:
             allocated_storage=20,
             wait=False,
         )
-    listed_ids = [i["DBInstanceIdentifier"] for i in moto_testkit_fixture.list_instances()]
+    listed_ids = [
+        i["DBInstanceIdentifier"] for i in moto_testkit_fixture.list_instances()
+    ]
     for db_id in ids:
         assert db_id in listed_ids
 
@@ -103,9 +109,15 @@ def test_create_instance_with_tags(moto_testkit_fixture: RDSRepository) -> None:
 
 
 def test_sqlite_create_insert_fetch(moto_testkit_fixture: RDSRepository) -> None:
-    moto_testkit_fixture.create_table_sql("users", "id INTEGER PRIMARY KEY, name TEXT, email TEXT")
-    moto_testkit_fixture.insert_record("users", ["name", "email"], ("Alice", "alice@example.com"))
-    moto_testkit_fixture.insert_record("users", ["name", "email"], ("Bob", "bob@example.com"))
+    moto_testkit_fixture.create_table_sql(
+        "users", "id INTEGER PRIMARY KEY, name TEXT, email TEXT"
+    )
+    moto_testkit_fixture.insert_record(
+        "users", ["name", "email"], ("Alice", "alice@example.com")
+    )
+    moto_testkit_fixture.insert_record(
+        "users", ["name", "email"], ("Bob", "bob@example.com")
+    )
 
     rows = moto_testkit_fixture.fetch_all("users")
     assert len(rows) == 2

@@ -1,7 +1,9 @@
-import pytest
-from aws_testkit.examples.dynamo.synchronous.dynamodb_synchronous_repository import DynamoDBRepository
-from aws_testkit.src.moto_testkit import AutoMotoTestKit
 import boto3
+import pytest
+
+from aws_testkit.examples.dynamo.synchronous.dynamodb_synchronous_repository import \
+    DynamoDBRepository
+from aws_testkit.src.moto_testkit import AutoMotoTestKit
 
 
 @pytest.fixture(scope="function")
@@ -9,7 +11,9 @@ def repo():
     """Fixture que cria um repositório com o ambiente Moto mockado."""
     with AutoMotoTestKit(auto_start=True) as mt:
         dynamodb_client = boto3.client("dynamodb")
-        repo_instance = DynamoDBRepository(endpoint_url=dynamodb_client.meta.endpoint_url)
+        repo_instance = DynamoDBRepository(
+            endpoint_url=dynamodb_client.meta.endpoint_url
+        )
 
         repo_instance.create_table(
             table_name="Users",

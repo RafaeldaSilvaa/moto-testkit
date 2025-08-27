@@ -1,8 +1,8 @@
 import pytest
 import pytest_asyncio
-from aws_testkit.examples.event_bridge.asynchronous.eventbridge_asynchronous_repository import (
-    EventBridgeAsyncRepository,
-)
+
+from aws_testkit.examples.event_bridge.asynchronous.eventbridge_asynchronous_repository import \
+    EventBridgeAsyncRepository
 from aws_testkit.src import MotoTestKit
 
 
@@ -16,7 +16,9 @@ async def moto_testkit_fixture() -> MotoTestKit:
 
 
 @pytest.mark.asyncio
-async def test_put_rule_and_list_with_fixture(moto_testkit_fixture: MotoTestKit) -> None:
+async def test_put_rule_and_list_with_fixture(
+    moto_testkit_fixture: MotoTestKit,
+) -> None:
     repository: EventBridgeAsyncRepository = EventBridgeAsyncRepository()
     rule_name: str = "regra-teste"
 

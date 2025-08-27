@@ -1,8 +1,10 @@
-import pytest
-import pytest_asyncio
 from typing import AsyncGenerator
 
-from aws_testkit.examples.dynamo.asynchronous.dynamo_asynchronous_repository import DynamoDBAsyncRepository
+import pytest
+import pytest_asyncio
+
+from aws_testkit.examples.dynamo.asynchronous.dynamo_asynchronous_repository import \
+    DynamoDBAsyncRepository
 from aws_testkit.src import MotoTestKit
 
 

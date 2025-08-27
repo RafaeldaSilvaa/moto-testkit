@@ -1,10 +1,10 @@
+from typing import Any, AsyncGenerator, Dict, List
+
 import pytest
 import pytest_asyncio
-from typing import AsyncGenerator, List, Dict, Any
 
-from aws_testkit.examples.cloudwatchlogs.asynchronous.cloudwatchlogs_asynchronous_repository import (
-    CloudWatchLogsAsyncRepository,
-)
+from aws_testkit.examples.cloudwatchlogs.asynchronous.cloudwatchlogs_asynchronous_repository import \
+    CloudWatchLogsAsyncRepository
 from aws_testkit.src import MotoTestKit
 
 
@@ -58,7 +58,9 @@ async def test_put_log_events(moto_testkit: MotoTestKit) -> None:
     logs_repo = CloudWatchLogsAsyncRepository(endpoint_url=endpoint_url)
 
     await logs_repo.create_log_group("grupo-logs-eventos-fixture")
-    await logs_repo.create_log_stream("grupo-logs-eventos-fixture", "stream-eventos-fixture")
+    await logs_repo.create_log_stream(
+        "grupo-logs-eventos-fixture", "stream-eventos-fixture"
+    )
     resp = await logs_repo.put_log_events(
         "grupo-logs-eventos-fixture",
         "stream-eventos-fixture",

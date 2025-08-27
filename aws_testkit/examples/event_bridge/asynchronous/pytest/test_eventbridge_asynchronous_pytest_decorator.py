@@ -1,8 +1,8 @@
 import pytest
-from aws_testkit.examples.event_bridge.asynchronous.eventbridge_asynchronous_repository import (
-    EventBridgeAsyncRepository,
-)
-from aws_testkit.src.moto_testkit import use_moto_testkit, AutoMotoTestKit
+
+from aws_testkit.examples.event_bridge.asynchronous.eventbridge_asynchronous_repository import \
+    EventBridgeAsyncRepository
+from aws_testkit.src.moto_testkit import AutoMotoTestKit, use_moto_testkit
 
 
 @pytest.mark.asyncio

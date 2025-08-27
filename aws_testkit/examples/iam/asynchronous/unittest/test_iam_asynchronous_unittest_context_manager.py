@@ -1,11 +1,15 @@
 import unittest
-from aws_testkit.examples.iam.asynchronous.iam_asynchronous_repository import IAMAsyncRepository
+
+from aws_testkit.examples.iam.asynchronous.iam_asynchronous_repository import \
+    IAMAsyncRepository
 from aws_testkit.src.moto_testkit import AutoMotoTestKit
 
 
 class TestIAMRepositoryWithContextManager(unittest.IsolatedAsyncioTestCase):
     async def test_create_and_list_users(self) -> None:
-        async with AutoMotoTestKit(auto_start=True, patch_aiobotocore=True) as moto_testkit:
+        async with AutoMotoTestKit(
+            auto_start=True, patch_aiobotocore=True
+        ) as moto_testkit:
             repository: IAMAsyncRepository = IAMAsyncRepository()
             user_name: str = "usuario_teste"
 

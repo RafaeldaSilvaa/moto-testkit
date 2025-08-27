@@ -1,15 +1,10 @@
-import unittest
 import asyncio
-from unittest.mock import MagicMock, AsyncMock
+import unittest
+from unittest.mock import AsyncMock, MagicMock
 
-from aws_testkit.src.helpers import (
-    S3HelperTyped,
-    DynamoHelperTyped,
-    SQSHelperTyped,
-    S3ObjectModel,
-    DynamoItemModel,
-    SQSMessageModel,
-)
+from aws_testkit.src.helpers import (DynamoHelperTyped, DynamoItemModel,
+                                     S3HelperTyped, S3ObjectModel,
+                                     SQSHelperTyped, SQSMessageModel)
 
 
 class TestS3HelperTyped(unittest.TestCase):
@@ -36,7 +31,9 @@ class TestS3HelperTyped(unittest.TestCase):
 
         result = self.helper.put_object(model)
 
-        mock_client.put_object.assert_called_once_with(Bucket="b1", Key="k1", Body=b"data")
+        mock_client.put_object.assert_called_once_with(
+            Bucket="b1", Key="k1", Body=b"data"
+        )
         self.assertEqual(result, {"status": "uploaded"})
 
     def test_get_object_body(self):
@@ -58,7 +55,9 @@ class TestS3HelperTyped(unittest.TestCase):
 
         result = asyncio.run(self.helper.put_object_async(model))
 
-        mock_client.put_object.assert_awaited_once_with(Bucket="b1", Key="k1", Body=b"data")
+        mock_client.put_object.assert_awaited_once_with(
+            Bucket="b1", Key="k1", Body=b"data"
+        )
         self.assertEqual(result, {"async": True})
 
     def test_get_object_body_async(self):
@@ -95,7 +94,9 @@ class TestDynamoHelperTyped(unittest.TestCase):
         self.mock_factory.get_client.return_value = mock_client
 
         result = self.helper.put_item(model)
-        mock_client.put_item.assert_called_once_with(TableName="t1", Item={"id": {"S": "1"}})
+        mock_client.put_item.assert_called_once_with(
+            TableName="t1", Item={"id": {"S": "1"}}
+        )
         self.assertEqual(result, {"ok": 2})
 
     def test_get_item(self):
@@ -105,7 +106,9 @@ class TestDynamoHelperTyped(unittest.TestCase):
 
         result = self.helper.get_item("t1", {"id": {"S": "1"}})
 
-        mock_client.get_item.assert_called_once_with(TableName="t1", Key={"id": {"S": "1"}})
+        mock_client.get_item.assert_called_once_with(
+            TableName="t1", Key={"id": {"S": "1"}}
+        )
         self.assertEqual(result, {"Item": {}})
 
     def test_put_item_async(self):
@@ -148,7 +151,9 @@ class TestSQSHelperTyped(unittest.TestCase):
         self.mock_factory.get_client.return_value = mock_client
 
         result = self.helper.send_message(model)
-        mock_client.send_message.assert_called_once_with(QueueUrl="url", MessageBody="mensagem")
+        mock_client.send_message.assert_called_once_with(
+            QueueUrl="url", MessageBody="mensagem"
+        )
         self.assertEqual(result, {"ok": 4})
 
     def test_receive_messages(self):
@@ -157,7 +162,9 @@ class TestSQSHelperTyped(unittest.TestCase):
         self.mock_factory.get_client.return_value = mock_client
 
         result = self.helper.receive_messages("url", max_num=5)
-        mock_client.receive_message.assert_called_once_with(QueueUrl="url", MaxNumberOfMessages=5)
+        mock_client.receive_message.assert_called_once_with(
+            QueueUrl="url", MaxNumberOfMessages=5
+        )
         self.assertEqual(result, {"Messages": []})
 
     def test_send_message_async(self):

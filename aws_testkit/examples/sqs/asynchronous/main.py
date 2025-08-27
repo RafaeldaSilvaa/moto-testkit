@@ -1,6 +1,7 @@
 import asyncio
 
-from aws_testkit.examples.sqs.asynchronous.sqs_asynchronous_client import SQSAsyncClient
+from aws_testkit.examples.sqs.asynchronous.sqs_asynchronous_client import \
+    SQSAsyncClient
 
 # Configurações da AWS - Substitua pelos seus valores
 AWS_REGION = "sua-regiao-aws"
@@ -17,7 +18,9 @@ async def main():
     print("--- Enviando mensagem ---")
     message_to_send = "Esta é uma mensagem de teste enviada de forma assíncrona."
     await sqs_client.send_message(message_to_send)
-    await asyncio.sleep(2)  # Atraso para garantir que a mensagem esteja disponível na fila
+    await asyncio.sleep(
+        2
+    )  # Atraso para garantir que a mensagem esteja disponível na fila
 
     # 2. Receber mensagens
     print("\n--- Recebendo mensagens ---")

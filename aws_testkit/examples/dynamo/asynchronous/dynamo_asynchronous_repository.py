@@ -1,14 +1,21 @@
+from typing import Dict, List, Optional
+
 import aioboto3
-from typing import Optional, List, Dict
 
 
 class DynamoDBAsyncRepository:
-    def __init__(self, endpoint_url: Optional[str] = None, region_name: str = "us-east-1"):
+    def __init__(
+        self, endpoint_url: Optional[str] = None, region_name: str = "us-east-1"
+    ):
         self.endpoint_url = endpoint_url
         self.region_name = region_name
 
     async def create_table(
-        self, table_name: str, key_schema: List[Dict], attribute_definitions: List[Dict], provisioned_throughput: Dict
+        self,
+        table_name: str,
+        key_schema: List[Dict],
+        attribute_definitions: List[Dict],
+        provisioned_throughput: Dict,
     ):
         async with aioboto3.Session().client(
             "dynamodb", endpoint_url=self.endpoint_url, region_name=self.region_name
@@ -33,7 +40,12 @@ class DynamoDBAsyncRepository:
             resp = await client.get_item(TableName=table_name, Key=key)
             return resp.get("Item")
 
-    async def query_items(self, table_name: str, key_condition_expression, expression_attribute_values: Dict):
+    async def query_items(
+        self,
+        table_name: str,
+        key_condition_expression,
+        expression_attribute_values: Dict,
+    ):
         async with aioboto3.Session().client(
             "dynamodb", endpoint_url=self.endpoint_url, region_name=self.region_name
         ) as client:

@@ -1,6 +1,9 @@
 import unittest
+
 import boto3
-from aws_testkit.examples.dynamo.synchronous.dynamodb_synchronous_repository import DynamoDBRepository
+
+from aws_testkit.examples.dynamo.synchronous.dynamodb_synchronous_repository import \
+    DynamoDBRepository
 from aws_testkit.src.moto_testkit import use_moto_testkit
 
 

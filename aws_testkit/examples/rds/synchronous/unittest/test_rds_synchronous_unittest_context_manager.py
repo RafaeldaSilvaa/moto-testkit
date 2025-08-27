@@ -1,6 +1,9 @@
 import unittest
+
 from botocore.exceptions import ClientError
-from aws_testkit.examples.rds.synchronous.rds_synchronous_repository import RDSRepository
+
+from aws_testkit.examples.rds.synchronous.rds_synchronous_repository import \
+    RDSRepository
 from aws_testkit.src.moto_testkit import AutoMotoTestKit
 
 
@@ -25,7 +28,11 @@ class TestRDSRepositoryWithContextManager(unittest.TestCase):
                 wait=False,
             )
             self.assertEqual(created["DBInstanceIdentifier"], "testdb")
-            self.assertTrue(any(i["DBInstanceIdentifier"] == "testdb" for i in repo.list_instances()))
+            self.assertTrue(
+                any(
+                    i["DBInstanceIdentifier"] == "testdb" for i in repo.list_instances()
+                )
+            )
 
     def test_delete_rds_instance(self) -> None:
         with AutoMotoTestKit(auto_start=True) as mtk:
@@ -108,8 +115,12 @@ class TestRDSRepositoryWithContextManager(unittest.TestCase):
     def test_sqlite_create_insert_fetch(self) -> None:
         with AutoMotoTestKit(auto_start=True) as mtk:
             repo = _create_repo(mtk)
-            repo.create_table_sql("users", "id INTEGER PRIMARY KEY, name TEXT, email TEXT")
-            repo.insert_record("users", ["name", "email"], ("Alice", "alice@example.com"))
+            repo.create_table_sql(
+                "users", "id INTEGER PRIMARY KEY, name TEXT, email TEXT"
+            )
+            repo.insert_record(
+                "users", ["name", "email"], ("Alice", "alice@example.com")
+            )
             repo.insert_record("users", ["name", "email"], ("Bob", "bob@example.com"))
             rows = repo.fetch_all("users")
             self.assertEqual(len(rows), 2)

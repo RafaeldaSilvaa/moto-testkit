@@ -1,6 +1,8 @@
 import pytest
 import pytest_asyncio
-from aws_testkit.examples.iam.asynchronous.iam_asynchronous_repository import IAMAsyncRepository
+
+from aws_testkit.examples.iam.asynchronous.iam_asynchronous_repository import \
+    IAMAsyncRepository
 from aws_testkit.src import MotoTestKit
 
 
@@ -14,7 +16,9 @@ async def moto_testkit_fixture() -> MotoTestKit:
 
 
 @pytest.mark.asyncio
-async def test_create_and_list_users_with_fixture(moto_testkit_fixture: MotoTestKit) -> None:
+async def test_create_and_list_users_with_fixture(
+    moto_testkit_fixture: MotoTestKit,
+) -> None:
     repository: IAMAsyncRepository = IAMAsyncRepository()
     user_name: str = "usuario_teste"
 

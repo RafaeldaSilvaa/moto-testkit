@@ -1,13 +1,15 @@
 import unittest
-from aws_testkit.examples.stepfunctions.asynchronous.stepfunctions_asynchronous_repository import (
-    StepFunctionsAsyncRepository,
-)
+
+from aws_testkit.examples.stepfunctions.asynchronous.stepfunctions_asynchronous_repository import \
+    StepFunctionsAsyncRepository
 from aws_testkit.src import MotoTestKit
 
 
 class TestStepFunctionsRepositoryFixtureMotoTestKit(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self) -> None:
-        self.moto_testkit: MotoTestKit = MotoTestKit(auto_start=True, patch_aiobotocore=True)
+        self.moto_testkit: MotoTestKit = MotoTestKit(
+            auto_start=True, patch_aiobotocore=True
+        )
         self.repository: StepFunctionsAsyncRepository = StepFunctionsAsyncRepository()
 
     async def asyncTearDown(self) -> None:
@@ -15,7 +17,9 @@ class TestStepFunctionsRepositoryFixtureMotoTestKit(unittest.IsolatedAsyncioTest
         self.moto_testkit.stop()
 
     async def test_create_and_start_execution(self) -> None:
-        definition = '{"StartAt": "Hello", "States": {"Hello": {"Type": "Pass", "End": true}}}'
+        definition = (
+            '{"StartAt": "Hello", "States": {"Hello": {"Type": "Pass", "End": true}}}'
+        )
         sm = await self.repository.create_state_machine(
             "MinhaStateMachine", definition, "arn:aws:iam::123456789012:role/DummyRole"
         )

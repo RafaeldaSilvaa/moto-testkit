@@ -1,15 +1,24 @@
 # dynamodb_synchronous_repository.py
+from typing import Dict, List, Optional
+
 import boto3
 from botocore.exceptions import ClientError
-from typing import List, Dict, Optional
 
 
 class DynamoDBRepository:
-    def __init__(self, endpoint_url: Optional[str] = None, region_name: str = "us-east-1"):
-        self.client = boto3.client("dynamodb", endpoint_url=endpoint_url, region_name=region_name)
+    def __init__(
+        self, endpoint_url: Optional[str] = None, region_name: str = "us-east-1"
+    ):
+        self.client = boto3.client(
+            "dynamodb", endpoint_url=endpoint_url, region_name=region_name
+        )
 
     def create_table(
-        self, table_name: str, key_schema: List[Dict], attribute_definitions: List[Dict], provisioned_throughput: Dict
+        self,
+        table_name: str,
+        key_schema: List[Dict],
+        attribute_definitions: List[Dict],
+        provisioned_throughput: Dict,
     ):
         return self.client.create_table(
             TableName=table_name,
@@ -31,7 +40,12 @@ class DynamoDBRepository:
     def list_tables(self) -> List[str]:
         return self.client.list_tables().get("TableNames", [])
 
-    def query_items(self, table_name: str, key_condition_expression, expression_attribute_values: Dict):
+    def query_items(
+        self,
+        table_name: str,
+        key_condition_expression,
+        expression_attribute_values: Dict,
+    ):
         """
         key_condition_expression: Ex: 'id = :id'
         expression_attribute_values: Ex: {':id': {'S': '123'}}

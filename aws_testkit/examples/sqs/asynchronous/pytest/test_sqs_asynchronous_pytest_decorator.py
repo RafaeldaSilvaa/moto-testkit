@@ -1,8 +1,10 @@
-import pytest
 import asyncio
 
-from aws_testkit.examples.sqs.asynchronous.sqs_asynchronous_client import SQSAsyncClient
-from aws_testkit.src.moto_testkit import use_moto_testkit, AutoMotoTestKit
+import pytest
+
+from aws_testkit.examples.sqs.asynchronous.sqs_asynchronous_client import \
+    SQSAsyncClient
+from aws_testkit.src.moto_testkit import AutoMotoTestKit, use_moto_testkit
 
 AWS_REGION = "us-east-1"
 QUEUE_NAME = "fila-teste"
@@ -30,7 +32,9 @@ async def test_sqs_basic_flow_with_decorator(moto_testkit: AutoMotoTestKit) -> N
 
 @pytest.mark.asyncio
 @use_moto_testkit(auto_start=True, patch_aiobotocore=True)
-async def test_sqs_send_receive_delete_with_decorator(moto_testkit: AutoMotoTestKit) -> None:
+async def test_sqs_send_receive_delete_with_decorator(
+    moto_testkit: AutoMotoTestKit,
+) -> None:
     sqs_client_boto = await moto_testkit.get_async_client("sqs")
     create_resp = await sqs_client_boto.create_queue(QueueName=QUEUE_NAME)
     queue_url = create_resp["QueueUrl"]

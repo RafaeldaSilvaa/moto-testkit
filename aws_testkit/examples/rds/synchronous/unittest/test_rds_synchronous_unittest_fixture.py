@@ -1,6 +1,9 @@
 import unittest
+
 from botocore.exceptions import ClientError
-from aws_testkit.examples.rds.synchronous.rds_synchronous_repository import RDSRepository
+
+from aws_testkit.examples.rds.synchronous.rds_synchronous_repository import \
+    RDSRepository
 from aws_testkit.src import MotoTestKit
 
 
@@ -27,7 +30,12 @@ class TestRDSRepositoryFixtureMotoTestKit(unittest.TestCase):
             wait=False,
         )
         self.assertEqual(created["DBInstanceIdentifier"], "testdb")
-        self.assertTrue(any(i["DBInstanceIdentifier"] == "testdb" for i in self.repository.list_instances()))
+        self.assertTrue(
+            any(
+                i["DBInstanceIdentifier"] == "testdb"
+                for i in self.repository.list_instances()
+            )
+        )
 
     def test_delete_rds_instance(self) -> None:
         self.repository.create_instance(
@@ -72,7 +80,9 @@ class TestRDSRepositoryFixtureMotoTestKit(unittest.TestCase):
                 allocated_storage=20,
                 wait=False,
             )
-        listed_ids = [i["DBInstanceIdentifier"] for i in self.repository.list_instances()]
+        listed_ids = [
+            i["DBInstanceIdentifier"] for i in self.repository.list_instances()
+        ]
         for db_id in ids:
             self.assertIn(db_id, listed_ids)
 
@@ -96,9 +106,15 @@ class TestRDSRepositoryFixtureMotoTestKit(unittest.TestCase):
         self.assertEqual(tag_dict, tags)
 
     def test_sqlite_create_insert_fetch(self) -> None:
-        self.repository.create_table_sql("users", "id INTEGER PRIMARY KEY, name TEXT, email TEXT")
-        self.repository.insert_record("users", ["name", "email"], ("Alice", "alice@example.com"))
-        self.repository.insert_record("users", ["name", "email"], ("Bob", "bob@example.com"))
+        self.repository.create_table_sql(
+            "users", "id INTEGER PRIMARY KEY, name TEXT, email TEXT"
+        )
+        self.repository.insert_record(
+            "users", ["name", "email"], ("Alice", "alice@example.com")
+        )
+        self.repository.insert_record(
+            "users", ["name", "email"], ("Bob", "bob@example.com")
+        )
         rows = self.repository.fetch_all("users")
         self.assertEqual(len(rows), 2)
         self.assertEqual(rows[0]["name"], "Alice")

@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import io
 from typing import Any, Dict
+
 from pydantic import BaseModel, Field
 
 from .clients import ClientFactory
@@ -53,7 +54,9 @@ class S3HelperTyped:
         if isinstance(body_data, (bytes, bytearray)):
             body_data = io.BytesIO(body_data)
 
-        return await client.put_object(Bucket=model.bucket, Key=model.key, Body=body_data)
+        return await client.put_object(
+            Bucket=model.bucket, Key=model.key, Body=body_data
+        )
 
     async def get_object_body_async(self, bucket: str, key: str) -> bytes:
         client = await self._clients.get_async_client("s3")
@@ -109,8 +112,14 @@ class SQSHelperTyped:
 
     async def send_message_async(self, model: SQSMessageModel) -> Dict[str, Any]:
         client = await self._clients.get_async_client("sqs")
-        return await client.send_message(QueueUrl=model.queue_url, MessageBody=model.body)
+        return await client.send_message(
+            QueueUrl=model.queue_url, MessageBody=model.body
+        )
 
-    async def receive_messages_async(self, queue_url: str, max_num: int = 1) -> Dict[str, Any]:
+    async def receive_messages_async(
+        self, queue_url: str, max_num: int = 1
+    ) -> Dict[str, Any]:
         client = await self._clients.get_async_client("sqs")
-        return await client.receive_message(QueueUrl=queue_url, MaxNumberOfMessages=max_num)
+        return await client.receive_message(
+            QueueUrl=queue_url, MaxNumberOfMessages=max_num
+        )

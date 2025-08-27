@@ -1,7 +1,8 @@
 import unittest
 
-from aws_testkit.examples.event_bridge.synchronous.eventbridge_synchronous_repository import EventBridgeRepository
-from aws_testkit.src.moto_testkit import use_moto_testkit, AutoMotoTestKit
+from aws_testkit.examples.event_bridge.synchronous.eventbridge_synchronous_repository import \
+    EventBridgeRepository
+from aws_testkit.src.moto_testkit import AutoMotoTestKit, use_moto_testkit
 
 
 class TestEventBridgeRepositoryWithDecorator(unittest.TestCase):

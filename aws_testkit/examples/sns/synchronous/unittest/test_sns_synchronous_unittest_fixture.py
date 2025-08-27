@@ -1,6 +1,7 @@
 import unittest
 
-from aws_testkit.examples.sns.synchronous.sns_synchronous_repository import SNSRepository
+from aws_testkit.examples.sns.synchronous.sns_synchronous_repository import \
+    SNSRepository
 from aws_testkit.src import MotoTestKit
 
 

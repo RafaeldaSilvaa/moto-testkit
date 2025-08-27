@@ -1,11 +1,15 @@
 import unittest
+
+from aws_testkit.examples.iam.asynchronous.iam_asynchronous_repository import \
+    IAMAsyncRepository
 from aws_testkit.src import MotoTestKit
-from aws_testkit.examples.iam.asynchronous.iam_asynchronous_repository import IAMAsyncRepository
 
 
 class TestIAMRepositoryFixtureMotoTestKit(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self) -> None:
-        self.moto_testkit: MotoTestKit = MotoTestKit(auto_start=True, patch_aiobotocore=True)
+        self.moto_testkit: MotoTestKit = MotoTestKit(
+            auto_start=True, patch_aiobotocore=True
+        )
         self.repository: IAMAsyncRepository = IAMAsyncRepository()
 
     async def asyncTearDown(self) -> None:

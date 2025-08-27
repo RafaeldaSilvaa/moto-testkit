@@ -1,6 +1,7 @@
 import pytest
 
-from aws_testkit.examples.s3.synchronous.s3_synchronous_repository import S3Repository
+from aws_testkit.examples.s3.synchronous.s3_synchronous_repository import \
+    S3Repository
 from aws_testkit.src import MotoTestKit
 
 
@@ -8,12 +9,16 @@ from aws_testkit.src import MotoTestKit
 def moto_testkit_fixture() -> S3Repository:
     """Inicializa MotoTestKit e retorna o repositório S3 síncrono configurado."""
     moto_testkit = MotoTestKit(auto_start=True)
-    repository = S3Repository(endpoint_url=moto_testkit.get_client("s3").meta.endpoint_url)
+    repository = S3Repository(
+        endpoint_url=moto_testkit.get_client("s3").meta.endpoint_url
+    )
     yield repository
     moto_testkit.stop()
 
 
-def test_create_and_list_bucket_with_fixture(moto_testkit_fixture: S3Repository) -> None:
+def test_create_and_list_bucket_with_fixture(
+    moto_testkit_fixture: S3Repository,
+) -> None:
     bucket_name: str = "my-bucket"
     moto_testkit_fixture.create_bucket(bucket_name)
     assert bucket_name in moto_testkit_fixture.list_buckets()

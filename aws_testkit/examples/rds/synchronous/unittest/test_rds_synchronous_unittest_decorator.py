@@ -1,6 +1,9 @@
 import unittest
+
 from botocore.exceptions import ClientError
-from aws_testkit.examples.rds.synchronous.rds_synchronous_repository import RDSRepository
+
+from aws_testkit.examples.rds.synchronous.rds_synchronous_repository import \
+    RDSRepository
 from aws_testkit.src.moto_testkit import AutoMotoTestKit, use_moto_testkit
 
 
@@ -26,7 +29,9 @@ class TestRDSRepositoryWithDecorator(unittest.TestCase):
             wait=False,
         )
         self.assertEqual(created["DBInstanceIdentifier"], "testdb")
-        self.assertTrue(any(i["DBInstanceIdentifier"] == "testdb" for i in repo.list_instances()))
+        self.assertTrue(
+            any(i["DBInstanceIdentifier"] == "testdb" for i in repo.list_instances())
+        )
 
     @use_moto_testkit(auto_start=True)
     def test_delete_rds_instance(self, moto_testkit: AutoMotoTestKit) -> None:

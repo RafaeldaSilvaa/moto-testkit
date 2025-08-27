@@ -1,5 +1,6 @@
-import boto3
 from typing import Optional
+
+import boto3
 
 
 class IAMRepository:
@@ -13,4 +14,6 @@ class IAMRepository:
         return self.client.list_users()["Users"]
 
     def create_role(self, role_name: str, assume_role_policy_document: str):
-        return self.client.create_role(RoleName=role_name, AssumeRolePolicyDocument=assume_role_policy_document)
+        return self.client.create_role(
+            RoleName=role_name, AssumeRolePolicyDocument=assume_role_policy_document
+        )

@@ -1,9 +1,12 @@
+from typing import List, Optional
+
 import aioboto3
-from typing import Optional, List
 
 
 class EventBridgeAsyncRepository:
-    def __init__(self, endpoint_url: Optional[str] = None, region_name: str = "us-east-1"):
+    def __init__(
+        self, endpoint_url: Optional[str] = None, region_name: str = "us-east-1"
+    ):
         self.endpoint_url = endpoint_url
         self.region_name = region_name
 
