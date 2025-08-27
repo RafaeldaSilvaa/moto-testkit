@@ -1,8 +1,7 @@
 import pytest
 from botocore.exceptions import ClientError
 
-from examples.rds.synchronous.rds_synchronous_repository import \
-    RDSRepository
+from examples.rds.synchronous.rds_synchronous_repository import RDSRepository
 from src.moto_testkit import AutoMotoTestKit
 
 

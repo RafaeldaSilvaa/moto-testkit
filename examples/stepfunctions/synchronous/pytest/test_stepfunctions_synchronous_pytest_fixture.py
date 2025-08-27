@@ -1,7 +1,6 @@
 import pytest
 
-from examples.stepfunctions.synchronous.stepfunctions_synchronous_repository import \
-    StepFunctionsRepository
+from examples.stepfunctions.synchronous.stepfunctions_synchronous_repository import StepFunctionsRepository
 from src import MotoTestKit
 
 

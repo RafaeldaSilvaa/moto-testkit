@@ -1,8 +1,7 @@
 import pytest
 import pytest_asyncio
 
-from examples.sns.asynchronous.sns_asynchronous_repository import \
-    SNSAsyncRepository
+from examples.sns.asynchronous.sns_asynchronous_repository import SNSAsyncRepository
 from src import MotoTestKit
 
 

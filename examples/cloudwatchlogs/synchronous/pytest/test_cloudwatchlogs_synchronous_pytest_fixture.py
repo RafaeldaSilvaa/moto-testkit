@@ -2,8 +2,7 @@ from typing import Any, Dict, Generator, List
 
 import pytest
 
-from examples.cloudwatchlogs.synchronous.cloudwatchlogs_synchronous_repository import \
-    CloudWatchLogsRepository
+from examples.cloudwatchlogs.synchronous.cloudwatchlogs_synchronous_repository import CloudWatchLogsRepository
 from src import MotoTestKit
 
 

@@ -1,7 +1,6 @@
 from typing import Any, Dict, List
 
-from examples.cloudwatchlogs.synchronous.cloudwatchlogs_synchronous_repository import \
-    CloudWatchLogsRepository
+from examples.cloudwatchlogs.synchronous.cloudwatchlogs_synchronous_repository import CloudWatchLogsRepository
 from src.moto_testkit import use_moto_testkit
 
 

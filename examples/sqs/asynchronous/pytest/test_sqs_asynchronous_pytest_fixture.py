@@ -3,8 +3,7 @@ import asyncio
 import pytest
 import pytest_asyncio
 
-from examples.sqs.asynchronous.sqs_asynchronous_client import \
-    SQSAsyncClient
+from examples.sqs.asynchronous.sqs_asynchronous_client import SQSAsyncClient
 from src import MotoTestKit
 
 AWS_REGION = "us-east-1"

@@ -1,7 +1,6 @@
 import unittest
 
-from examples.stepfunctions.synchronous.stepfunctions_synchronous_repository import \
-    StepFunctionsRepository
+from examples.stepfunctions.synchronous.stepfunctions_synchronous_repository import StepFunctionsRepository
 from src.moto_testkit import AutoMotoTestKit, use_moto_testkit
 
 

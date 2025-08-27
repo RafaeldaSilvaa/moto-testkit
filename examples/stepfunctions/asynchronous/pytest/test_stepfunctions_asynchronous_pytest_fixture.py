@@ -1,8 +1,7 @@
 import pytest
 import pytest_asyncio
 
-from examples.stepfunctions.asynchronous.stepfunctions_asynchronous_repository import \
-    StepFunctionsAsyncRepository
+from examples.stepfunctions.asynchronous.stepfunctions_asynchronous_repository import StepFunctionsAsyncRepository
 from src import MotoTestKit
 
 

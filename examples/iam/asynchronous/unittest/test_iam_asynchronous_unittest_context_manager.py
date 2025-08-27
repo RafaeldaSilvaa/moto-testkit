@@ -1,7 +1,6 @@
 import unittest
 
-from examples.iam.asynchronous.iam_asynchronous_repository import \
-    IAMAsyncRepository
+from examples.iam.asynchronous.iam_asynchronous_repository import IAMAsyncRepository
 from src.moto_testkit import AutoMotoTestKit
 
 

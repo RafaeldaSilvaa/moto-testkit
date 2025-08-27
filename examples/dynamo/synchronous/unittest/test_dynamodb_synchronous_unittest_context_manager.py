@@ -1,7 +1,6 @@
 import unittest
 
-from examples.dynamo.synchronous.dynamodb_synchronous_repository import \
-    DynamoDBRepository
+from examples.dynamo.synchronous.dynamodb_synchronous_repository import DynamoDBRepository
 from src.moto_testkit import AutoMotoTestKit
 
 

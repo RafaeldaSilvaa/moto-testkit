@@ -61,7 +61,8 @@ jobs:
       - run: bandit -r . --exit-zero
       - name: Prepare test environment
         run: |
-          find . -type d \( -path "./.*" -o -path "./.venv*" \) -prune -o -type d -exec sh -c 'touch "$0/__init__.py"' {} \;
+          find . -type d \( -path "./.*" -o -path "./.venv*" \) -prune -o -type d \
+            -exec sh -c '[ -f "$0/__init__.py" ] || touch "$0/__init__.py"' {} \;
           export PYTHONPATH="$PYTHONPATH:$(pwd)"
       - run: pytest --cov=./ --cov-report=term
       - run: python -m build

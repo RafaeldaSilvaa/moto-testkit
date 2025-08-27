@@ -1,7 +1,6 @@
 import unittest
 
-from examples.event_bridge.asynchronous.eventbridge_asynchronous_repository import \
-    EventBridgeAsyncRepository
+from examples.event_bridge.asynchronous.eventbridge_asynchronous_repository import EventBridgeAsyncRepository
 from src.moto_testkit import AutoMotoTestKit
 
 

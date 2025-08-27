@@ -2,8 +2,7 @@ from typing import Any, Dict, List
 
 import pytest
 
-from examples.cloudwatchlogs.asynchronous.cloudwatchlogs_asynchronous_repository import \
-    CloudWatchLogsAsyncRepository
+from examples.cloudwatchlogs.asynchronous.cloudwatchlogs_asynchronous_repository import CloudWatchLogsAsyncRepository
 from src.moto_testkit import AutoMotoTestKit
 
 

@@ -1,7 +1,6 @@
 import pytest
 
-from examples.stepfunctions.asynchronous.stepfunctions_asynchronous_repository import \
-    StepFunctionsAsyncRepository
+from examples.stepfunctions.asynchronous.stepfunctions_asynchronous_repository import StepFunctionsAsyncRepository
 from src.moto_testkit import AutoMotoTestKit
 
 

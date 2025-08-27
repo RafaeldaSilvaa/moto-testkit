@@ -2,9 +2,14 @@ import asyncio
 import unittest
 from unittest.mock import AsyncMock, MagicMock
 
-from src.helpers import (DynamoHelperTyped, DynamoItemModel,
-                                     S3HelperTyped, S3ObjectModel,
-                                     SQSHelperTyped, SQSMessageModel)
+from src.helpers import (
+    DynamoHelperTyped,
+    DynamoItemModel,
+    S3HelperTyped,
+    S3ObjectModel,
+    SQSHelperTyped,
+    SQSMessageModel,
+)
 
 
 class TestS3HelperTyped(unittest.TestCase):

@@ -2,8 +2,7 @@ from typing import Any, Dict
 
 import pytest
 
-from examples.dynamo.asynchronous.dynamo_asynchronous_repository import \
-    DynamoDBAsyncRepository
+from examples.dynamo.asynchronous.dynamo_asynchronous_repository import DynamoDBAsyncRepository
 from src.moto_testkit import AutoMotoTestKit
 
 

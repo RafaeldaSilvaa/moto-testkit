@@ -1,7 +1,6 @@
 import unittest
 
-from examples.s3.synchronous.s3_synchronous_repository import \
-    S3Repository
+from examples.s3.synchronous.s3_synchronous_repository import S3Repository
 from src.moto_testkit import AutoMotoTestKit
 
 

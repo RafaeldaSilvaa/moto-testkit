@@ -1,7 +1,6 @@
 import unittest
 
-from examples.sns.synchronous.sns_synchronous_repository import \
-    SNSRepository
+from examples.sns.synchronous.sns_synchronous_repository import SNSRepository
 from src.moto_testkit import AutoMotoTestKit, use_moto_testkit
 
 

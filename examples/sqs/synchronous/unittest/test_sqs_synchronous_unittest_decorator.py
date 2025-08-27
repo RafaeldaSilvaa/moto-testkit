@@ -1,7 +1,6 @@
 import unittest
 
-from examples.sqs.synchronous.sqs_synchronous_repository import \
-    SQSRepository
+from examples.sqs.synchronous.sqs_synchronous_repository import SQSRepository
 from src.moto_testkit import AutoMotoTestKit, use_moto_testkit
 
 

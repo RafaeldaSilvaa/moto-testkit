@@ -1,8 +1,7 @@
 import pytest
 import pytest_asyncio
 
-from examples.event_bridge.asynchronous.eventbridge_asynchronous_repository import \
-    EventBridgeAsyncRepository
+from examples.event_bridge.asynchronous.eventbridge_asynchronous_repository import EventBridgeAsyncRepository
 from src import MotoTestKit
 
 

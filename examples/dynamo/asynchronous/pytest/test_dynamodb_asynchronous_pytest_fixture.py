@@ -3,8 +3,7 @@ from typing import AsyncGenerator
 import pytest
 import pytest_asyncio
 
-from examples.dynamo.asynchronous.dynamo_asynchronous_repository import \
-    DynamoDBAsyncRepository
+from examples.dynamo.asynchronous.dynamo_asynchronous_repository import DynamoDBAsyncRepository
 from src import MotoTestKit
 
 

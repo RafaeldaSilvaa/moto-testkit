@@ -1,8 +1,7 @@
 import pytest
 import pytest_asyncio
 
-from examples.iam.asynchronous.iam_asynchronous_repository import \
-    IAMAsyncRepository
+from examples.iam.asynchronous.iam_asynchronous_repository import IAMAsyncRepository
 from src import MotoTestKit
 
 

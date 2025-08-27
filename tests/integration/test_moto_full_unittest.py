@@ -1,10 +1,8 @@
 import asyncio
 import unittest
 
-from src.helpers import (DynamoItemModel, S3ObjectModel,
-                                     SQSMessageModel)
-from src.moto_testkit import (AutoMotoTestKit, MotoTestKit,
-                                          use_moto_testkit)
+from src.helpers import DynamoItemModel, S3ObjectModel, SQSMessageModel
+from src.moto_testkit import AutoMotoTestKit, MotoTestKit, use_moto_testkit
 
 
 # =========================================================

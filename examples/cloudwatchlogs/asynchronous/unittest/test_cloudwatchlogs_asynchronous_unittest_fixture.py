@@ -1,8 +1,7 @@
 import unittest
 from typing import Any, Dict, List
 
-from examples.cloudwatchlogs.asynchronous.cloudwatchlogs_asynchronous_repository import \
-    CloudWatchLogsAsyncRepository
+from examples.cloudwatchlogs.asynchronous.cloudwatchlogs_asynchronous_repository import CloudWatchLogsAsyncRepository
 from src import MotoTestKit
 
 

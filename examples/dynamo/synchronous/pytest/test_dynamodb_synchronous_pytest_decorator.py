@@ -1,8 +1,7 @@
 from typing import Any, Dict, List
 
-from examples.dynamo.synchronous.dynamodb_synchronous_repository import \
-    DynamoDBRepository
-from src.moto_testkit import AutoMotoTestKit, use_moto_testkit
+from examples.dynamo.synchronous.dynamodb_synchronous_repository import DynamoDBRepository
+from src.moto_testkit import use_moto_testkit
 
 
 @use_moto_testkit(auto_start=True, patch_aiobotocore=False)

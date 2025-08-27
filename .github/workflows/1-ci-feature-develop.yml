@@ -39,7 +39,8 @@ jobs:
           pip install -r requirements-dev.txt
       - name: Prepare test environment
         run: |
-          find . -type d \( -path "./.*" -o -path "./.venv*" \) -prune -o -type d -exec sh -c 'touch "$0/__init__.py"' {} \;
+          find . -type d \( -path "./.*" -o -path "./.venv*" \) -prune -o -type d \
+            -exec sh -c '[ -f "$0/__init__.py" ] || touch "$0/__init__.py"' {} \;
           export PYTHONPATH="$PYTHONPATH:$(pwd)"
       - run: pytest --cov=./ --cov-report=term
 
@@ -47,11 +48,12 @@ jobs:
     needs: tests
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
       - uses: repo-sync/pull-request@v2
         with:
           source_branch: ${{ github.ref_name }}
           destination_branch: develop
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          title: 'Auto-PR: ${{ github.ref_name }} → develop'
+          pr_title: 'Auto-PR: ${{ github.ref_name }} → develop'
           pr_body: 'Gerado automaticamente pelo workflow CI feature → develop.'
-          labels: 'feature, auto-pr'
+          pr_label: 'feature,auto-pr'

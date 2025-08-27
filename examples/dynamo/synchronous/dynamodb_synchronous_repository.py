@@ -2,7 +2,6 @@
 from typing import Dict, List, Optional
 
 import boto3
-from botocore.exceptions import ClientError
 
 
 class DynamoDBRepository:

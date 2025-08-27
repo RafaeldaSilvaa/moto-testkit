@@ -2,8 +2,7 @@ from typing import Any, Dict, Generator, List
 
 import pytest
 
-from examples.dynamo.synchronous.dynamodb_synchronous_repository import \
-    DynamoDBRepository
+from examples.dynamo.synchronous.dynamodb_synchronous_repository import DynamoDBRepository
 from src import MotoTestKit
 
 

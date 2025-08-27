@@ -1,8 +1,7 @@
 import unittest
 from typing import Any, Dict
 
-from examples.dynamo.asynchronous.dynamo_asynchronous_repository import \
-    DynamoDBAsyncRepository
+from examples.dynamo.asynchronous.dynamo_asynchronous_repository import DynamoDBAsyncRepository
 from src.moto_testkit import use_moto_testkit
 
 

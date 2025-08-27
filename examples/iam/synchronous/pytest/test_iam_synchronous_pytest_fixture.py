@@ -1,7 +1,6 @@
 import pytest
 
-from examples.iam.synchronous.iam_synchronous_repository import \
-    IAMRepository
+from examples.iam.synchronous.iam_synchronous_repository import IAMRepository
 from src import MotoTestKit
 
 

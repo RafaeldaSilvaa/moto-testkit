@@ -3,8 +3,7 @@ from typing import Any, AsyncGenerator, Dict, List
 import pytest
 import pytest_asyncio
 
-from examples.cloudwatchlogs.asynchronous.cloudwatchlogs_asynchronous_repository import \
-    CloudWatchLogsAsyncRepository
+from examples.cloudwatchlogs.asynchronous.cloudwatchlogs_asynchronous_repository import CloudWatchLogsAsyncRepository
 from src import MotoTestKit
 
 

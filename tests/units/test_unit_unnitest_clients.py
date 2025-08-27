@@ -1,6 +1,5 @@
 import asyncio
 import unittest
-from contextlib import suppress
 from unittest.mock import AsyncMock, MagicMock, patch
 
 from src import ClientFactory

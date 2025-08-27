@@ -1,7 +1,5 @@
-import pytest
 
-from examples.event_bridge.synchronous.eventbridge_synchronous_repository import \
-    EventBridgeRepository
+from examples.event_bridge.synchronous.eventbridge_synchronous_repository import EventBridgeRepository
 from src.moto_testkit import AutoMotoTestKit, use_moto_testkit
 
 

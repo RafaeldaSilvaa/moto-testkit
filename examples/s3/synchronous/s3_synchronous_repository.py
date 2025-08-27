@@ -1,7 +1,6 @@
 from typing import List, Optional
 
 import boto3
-from botocore.exceptions import ClientError
 
 
 class S3Repository:

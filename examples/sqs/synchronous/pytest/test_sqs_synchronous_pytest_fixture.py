@@ -1,7 +1,6 @@
 import pytest
 
-from examples.sqs.synchronous.sqs_synchronous_repository import \
-    SQSRepository
+from examples.sqs.synchronous.sqs_synchronous_repository import SQSRepository
 from src import MotoTestKit
 
 

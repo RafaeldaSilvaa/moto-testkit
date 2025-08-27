@@ -1,7 +1,6 @@
 import pytest
 
-from src.helpers import (DynamoItemModel, S3ObjectModel,
-                                     SQSMessageModel)
+from src.helpers import DynamoItemModel, S3ObjectModel, SQSMessageModel
 from src.moto_testkit import AutoMotoTestKit, MotoTestKit
 
 AWS_REGION = "us-east-1"

@@ -1,5 +1,4 @@
-from examples.iam.synchronous.iam_synchronous_repository import \
-    IAMRepository
+from examples.iam.synchronous.iam_synchronous_repository import IAMRepository
 from src.moto_testkit import AutoMotoTestKit, use_moto_testkit
 
 

@@ -1,7 +1,6 @@
 import asyncio
 
-from examples.sqs.asynchronous.sqs_asynchronous_client import \
-    SQSAsyncClient
+from examples.sqs.asynchronous.sqs_asynchronous_client import SQSAsyncClient
 
 # Configurações da AWS - Substitua pelos seus valores
 AWS_REGION = "sua-regiao-aws"
