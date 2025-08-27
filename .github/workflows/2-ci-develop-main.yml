@@ -1,4 +1,4 @@
-name: CI develop → main
+name: CI develop → master
 
 on:
   push:
@@ -29,7 +29,7 @@ jobs:
           export PYTHONPATH="$PYTHONPATH:$(pwd)"
       - run: pytest --cov=./ --cov-report=term
 
-  create-pr-main:
+  create-pr-master:
     needs: tests
     runs-on: ubuntu-latest
     steps:
@@ -37,8 +37,8 @@ jobs:
       - uses: repo-sync/pull-request@v2
         with:
           source_branch: develop
-          destination_branch: main
+          destination_branch: master
           github_token: ${{ secrets.REPO_SYNC_TOKEN }} # PAT
-          pr_title: 'PR para revisão: develop → main'
+          pr_title: 'PR para revisão: develop → master'
           pr_body: 'Gerado automaticamente após merge em develop.'
           pr_label: 'release-candidate,review'
