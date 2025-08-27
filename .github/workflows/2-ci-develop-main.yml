@@ -38,7 +38,7 @@ jobs:
         with:
           source_branch: develop
           destination_branch: master
-          github_token: ${{ secrets.REPO_SYNC_TOKEN }} # PAT
+          github_token: ${{ secrets.REPO_SYNC_TOKEN }}
           pr_title: 'PR para revisão: develop → master'
-          pr_body: 'Gerado automaticamente após merge em develop.'
+          pr_body: 'Gerado automaticamente após merge na develop.'
           pr_label: 'release-candidate,review'
