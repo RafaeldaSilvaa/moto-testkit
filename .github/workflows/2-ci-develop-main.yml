@@ -11,25 +11,8 @@ permissions:
   pull-requests: write
 
 jobs:
-  lint-security:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-      - run: |
-          python -m pip install --upgrade pip
-          pip install ruff bandit
-      - run: |
-          ruff check . --fix --exit-zero
-          ruff format . || true
-      - run: bandit -r . --exit-zero
-
   tests:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
-    needs: lint-security
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -47,7 +30,6 @@ jobs:
       - run: pytest --cov=./ --cov-report=term
 
   create-pr-main:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     needs: tests
     runs-on: ubuntu-latest
     steps:
@@ -56,7 +38,7 @@ jobs:
         with:
           source_branch: develop
           destination_branch: main
-          github_token: ${{ secrets.REPO_SYNC_TOKEN }}
-          pr_title: 'Auto-PR: develop → main'
-          pr_body: 'Gerado automaticamente pelo workflow CI develop → main.'
-          pr_label: 'auto-pr'
+          github_token: ${{ secrets.REPO_SYNC_TOKEN }} # usa o PAT para evitar 403
+          pr_title: 'PR para revisão: develop → main'
+          pr_body: 'Workflow automático gerou este PR para revisar e aprovar antes de integrar develop na main.'
+          pr_label: 'review,main-release'
