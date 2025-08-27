@@ -5,21 +5,61 @@ on:
     branches: [ main ]
     tags:
       - 'v*'
-  workflow_dispatch:  # disparo manual
+  workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
+  get-latest-tag:
+    runs-on: ubuntu-latest
+    outputs:
+      new_tag: ${{ steps.bump-tag.outputs.new_tag }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # importante para puxar todas as tags
+
+      - name: Get latest tag and bump
+        id: bump-tag
+        run: |
+          last_tag=$(git describe --tags --abbrev=0 || echo "v0.0.0")
+          echo "Última tag encontrada: $last_tag"
+          
+          # extrai partes
+          major=$(echo $last_tag | cut -d. -f1 | tr -d v)
+          minor=$(echo $last_tag | cut -d. -f2)
+          patch=$(echo $last_tag | cut -d. -f3)
+
+          # incrementa patch
+          new_patch=$((patch + 1))
+          new_tag="v${major}.${minor}.${new_patch}"
+
+          echo "Nova tag gerada: $new_tag"
+          echo "new_tag=$new_tag" >> $GITHUB_OUTPUT
+
+  create-and-push-tag:
+    needs: get-latest-tag
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Create and push new tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag ${{ needs.get-latest-tag.outputs.new_tag }}
+          git push origin ${{ needs.get-latest-tag.outputs.new_tag }}
+
   publish:
+    needs: create-and-push-tag
     runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: [ "3.8", "3.9", "3.10", "3.11", "3.12" ]
-
     steps:
       - uses: actions/checkout@v4
-
       - name: Setup Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
@@ -33,7 +73,7 @@ jobs:
       - name: Run pre-commit hooks
         run: pre-commit run --all-files || true
 
-      - name: Run security checks (não-bloqueante)
+      - name: Security checks (não-bloqueante)
         run: |
           bandit -r . --exit-zero
           safety check || true
@@ -45,7 +85,6 @@ jobs:
         run: python -m build
 
       - name: Publish to PyPI
-        if: github.ref_type == 'tag'
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.CI }}
