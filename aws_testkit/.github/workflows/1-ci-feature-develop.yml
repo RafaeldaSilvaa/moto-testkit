@@ -1,4 +1,4 @@
-name: Feature Branch CI
+name: CI & Auto-PR to Develop
 
 on:
   push:
@@ -6,19 +6,15 @@ on:
       - 'feature/**'
 
 jobs:
-  ci:
+  ci-and-pr:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [ "3.10", "3.11" ]
-
     steps:
       - uses: actions/checkout@v4
 
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: 3.11
 
       - name: Install dependencies
         run: |
@@ -26,7 +22,7 @@ jobs:
           pip install pre-commit pytest pytest-cov bandit safety
 
       - name: Run pre-commit hooks
-        run: pre-commit run --all-files --hook-stage manual || true
+        run: pre-commit run --all-files || true
 
       - name: Run security checks
         run: |
@@ -42,4 +38,6 @@ jobs:
           source_branch: ${{ github.ref_name }}
           destination_branch: develop
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          title: 'Feature PR: ${{ github.ref_name }} → develop'
+          title: 'Auto-PR: ${{ github.ref_name }} → develop'
+          pr_body: 'This PR was automatically created by the `ci-feature-develop` workflow.'
+          labels: 'feature, auto-pr'

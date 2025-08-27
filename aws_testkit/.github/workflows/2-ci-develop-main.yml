@@ -1,0 +1,43 @@
+name: CI & Auto-PR to Main
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  ci-and-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pre-commit pytest pytest-cov bandit safety
+
+      - name: Run pre-commit hooks
+        run: pre-commit run --all-files || true
+
+      - name: Run security checks
+        run: |
+          bandit -r .
+          safety check
+
+      - name: Run tests with coverage
+        run: pytest --cov=./ --cov-report=term
+
+      - name: Create PR to main
+        uses: repo-sync/pull-request@v2
+        with:
+          source_branch: ${{ github.ref_name }}
+          destination_branch: main
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          title: 'Auto-PR: ${{ github.ref_name }} → main'
+          pr_body: 'This PR was automatically created by the `ci-develop-main` workflow.'
+          labels: 'release, auto-pr'
