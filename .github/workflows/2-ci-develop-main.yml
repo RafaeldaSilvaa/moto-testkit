@@ -56,7 +56,7 @@ jobs:
         with:
           source_branch: develop
           destination_branch: main
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.REPO_SYNC_TOKEN }}
           pr_title: 'Auto-PR: develop → main'
           pr_body: 'Gerado automaticamente pelo workflow CI develop → main.'
           pr_label: 'auto-pr'

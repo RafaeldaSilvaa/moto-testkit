@@ -53,7 +53,7 @@ jobs:
         with:
           source_branch: ${{ github.ref_name }}
           destination_branch: develop
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.REPO_SYNC_TOKEN }}
           pr_title: 'Auto-PR: ${{ github.ref_name }} → develop'
           pr_body: 'Gerado automaticamente pelo workflow CI feature → develop.'
           pr_label: 'feature,auto-pr'
