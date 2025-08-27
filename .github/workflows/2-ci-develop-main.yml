@@ -1,9 +1,10 @@
-name: CI & Auto-PR develop → main
+name: CI & Auto-PR: develop → main
 
 on:
   push:
     branches:
       - develop
+  workflow_dispatch:  # Rodar manualmente
 
 permissions:
   contents: write
@@ -12,15 +13,42 @@ permissions:
 jobs:
   ci-and-pr:
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: ["3.11"]
+
     steps:
       - uses: actions/checkout@v4
-      # (mesmos passos de CI)
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pre-commit pytest pytest-cov bandit safety
+
+      - name: Run pre-commit hooks
+        run: pre-commit run --all-files || true
+
+      - name: Run security checks (não-bloqueante)
+        run: |
+          bandit -r . --exit-zero
+          safety check || true
+
+      - name: Run tests with coverage
+        run: pytest --cov=./ --cov-report=term
+
       - name: Create PR to main
+        if: github.event_name == 'push'
         uses: repo-sync/pull-request@v2
         with:
           source_branch: develop
           destination_branch: main
           github_token: ${{ secrets.GITHUB_TOKEN }}
           title: 'Auto-PR: develop → main'
-          pr_body: 'Auto-PR gerado por push em develop.'
+          pr_body: 'Gerado automaticamente pelo workflow ci-develop-main.'
           labels: 'auto-pr'
