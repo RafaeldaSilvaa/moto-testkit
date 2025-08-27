@@ -39,3 +39,4 @@ class TestDynamoDB(unittest.TestCase):
         self.repo.put_item(table_name="Users", item={"id": "123", "name": "Alice"})
         result = self.repo.get_item(table_name="Users", key={"id": "123"})
         assert result["Item"]["name"] == "Alice"
+
