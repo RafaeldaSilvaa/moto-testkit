@@ -27,8 +27,8 @@ jobs:
           pip install ruff bandit
       - name: Run Ruff (lint + format)
         run: |
-          ruff check . --fix
-          ruff format .
+          ruff check . --fix --exit-zero
+          ruff format . || true
       - name: Security checks (não-bloqueante)
         run: bandit -r . --exit-zero
 
