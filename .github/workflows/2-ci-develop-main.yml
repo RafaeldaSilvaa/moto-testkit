@@ -12,6 +12,7 @@ permissions:
 
 jobs:
   tests:
+    if: contains(github.event.head_commit.message, 'Merge pull request')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -30,6 +31,7 @@ jobs:
       - run: pytest --cov=./ --cov-report=term
 
   create-pr-master:
+    if: contains(github.event.head_commit.message, 'Merge pull request')
     needs: tests
     runs-on: ubuntu-latest
     steps:
@@ -38,7 +40,7 @@ jobs:
         with:
           source_branch: develop
           destination_branch: master
-          github_token: ${{ secrets.REPO_SYNC_TOKEN }}
+          github_token: ${{ secrets.REPO_SYNC_TOKEN }} # PAT
           pr_title: 'PR para revisão: develop → master'
-          pr_body: 'Gerado automaticamente após merge na develop.'
+          pr_body: 'Gerado automaticamente após merge em develop.'
           pr_label: 'release-candidate,review'
