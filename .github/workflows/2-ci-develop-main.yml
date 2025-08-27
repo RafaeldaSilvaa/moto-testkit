@@ -1,0 +1,44 @@
+name: CI develop → main
+
+on:
+  workflow_run:
+    workflows: ["CI feature → develop"]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  tests:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+      - name: Prepare test environment
+        run: |
+          find . -type d \( -path "./.*" -o -path "./.venv*" \) -prune -o -type d \
+            -exec sh -c '[ -f "$0/__init__.py" ] || touch "$0/__init__.py"' {} \;
+          export PYTHONPATH="$PYTHONPATH:$(pwd)"
+      - run: pytest --cov=./ --cov-report=term
+
+  create-pr-main:
+    needs: tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: repo-sync/pull-request@v2
+        with:
+          source_branch: develop
+          destination_branch: main
+          github_token: ${{ secrets.REPO_SYNC_TOKEN }} # usa o PAT para evitar 403
+          pr_title: 'PR para revisão: develop → main'
+          pr_body: 'Workflow automático gerou este PR para revisar e aprovar antes de integrar develop na main.'
+          pr_label: 'review,main-release'
