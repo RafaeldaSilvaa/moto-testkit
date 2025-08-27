@@ -53,11 +53,11 @@ def test_sync_s3_dynamo_sqs(moto_testkit):
 async def test_async_s3_dynamo_sqs(moto_testkit):
     # S3
     s3_helper = moto_testkit.s3_helper()
-    s3_helper.create_bucket("bucket_async")
-    await s3_helper.put_object_async(
-        S3ObjectModel(bucket="bucket_async", key="async.txt", body=b"xyz")
+    s3_helper.create_bucket("bucket")
+    s3_helper.put_object(
+        S3ObjectModel(bucket="bucket", key="async.txt", body=b"xyz")
     )
-    assert await s3_helper.get_object_body_async("bucket_async", "async.txt") == b"xyz"
+    assert s3_helper.get_object_body("bucket", "async.txt") == b"xyz"
 
     # DynamoDB
     dynamo_helper = moto_testkit.dynamo_helper()
@@ -90,10 +90,10 @@ async def test_auto_moto_all_services():
     async with AutoMotoTestKit(auto_start=True, patch_aiobotocore=True) as auto_testkit:
         s3_helper = auto_testkit.s3_helper()
         s3_helper.create_bucket("bucket_ctx")
-        await s3_helper.put_object_async(
+        s3_helper.put_object(
             S3ObjectModel(bucket="bucket_ctx", key="ctx_key", body=b"img")
         )
-        assert await s3_helper.get_object_body_async("bucket_ctx", "ctx_key") == b"img"
+        assert s3_helper.get_object_body("bucket_ctx", "ctx_key") == b"img"
 
         dynamo_helper = auto_testkit.dynamo_helper()
         dynamo_helper.create_table("ctx_table", key_name="id")

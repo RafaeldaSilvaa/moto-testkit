@@ -81,8 +81,8 @@ class TestS3Helper(unittest.TestCase):
         asyncio.run(runner())
 
     @use_moto_testkit(auto_start=True, patch_aiobotocore=False)
-    def test_s3_sync_decorator(self, moto):
-        s3_helper = moto.s3_helper()
+    def test_s3_sync_decorator(self, moto_testkit):
+        s3_helper = moto_testkit.s3_helper()
         bucket_name = "s3-sync-decorator"
         s3_helper.create_bucket(bucket_name)
         s3_helper.put_object(
@@ -91,19 +91,19 @@ class TestS3Helper(unittest.TestCase):
         self.assertEqual(s3_helper.get_object_body(bucket_name, "f.txt"), b"data")
         self.assertIn(
             bucket_name,
-            [b["Name"] for b in moto.get_client("s3").list_buckets()["Buckets"]],
+            [b["Name"] for b in moto_testkit.get_client("s3").list_buckets()["Buckets"]],
         )
 
     @use_moto_testkit(auto_start=True, patch_aiobotocore=True)
-    async def test_s3_async_decorator(self, moto):
-        s3_helper = moto.s3_helper()
+    async def test_s3_async_decorator(self, moto_testkit):
+        s3_helper = moto_testkit.s3_helper()
         bucket_name = "s3-async-decorator"
         s3_helper.create_bucket(bucket_name)
         s3_helper.put_object(
             S3ObjectModel(bucket=bucket_name, key="a.txt", body=b"xyz")
         )
         self.assertEqual(s3_helper.get_object_body(bucket_name, "a.txt"), b"xyz")
-        buckets = moto.get_client("s3").list_buckets()["Buckets"]
+        buckets = moto_testkit.get_client("s3").list_buckets()["Buckets"]
         self.assertIn(bucket_name, [b["Name"] for b in buckets])
 
 
@@ -172,15 +172,15 @@ class TestDynamoHelper(unittest.TestCase):
         asyncio.run(runner())
 
     @use_moto_testkit(auto_start=True, patch_aiobotocore=True)
-    def test_dynamo_sync_decorator(self, moto):
-        dynamo_helper = moto.dynamo_helper()
+    def test_dynamo_sync_decorator(self, moto_testkit):
+        dynamo_helper = moto_testkit.dynamo_helper()
         table_name = "dynamo-sync-decorator"
         dynamo_helper.create_table(table_name, key_name="id")
         dynamo_helper.put_item(
             DynamoItemModel(table=table_name, item={"id": {"S": "1"}})
         )
         self.assertIn(
-            table_name, moto.get_client("dynamodb").list_tables()["TableNames"]
+            table_name, moto_testkit.get_client("dynamodb").list_tables()["TableNames"]
         )
 
     @use_moto_testkit(auto_start=True, patch_aiobotocore=True)
@@ -268,8 +268,8 @@ class TestSQSHelper(unittest.TestCase):
         asyncio.run(runner())
 
     @use_moto_testkit(auto_start=True, patch_aiobotocore=False)
-    def test_sqs_sync_decorator(self, moto):
-        sqs_helper = moto.sqs_helper()
+    def test_sqs_sync_decorator(self, moto_testkit):
+        sqs_helper = moto_testkit.sqs_helper()
         queue_name = "queue-sync-decorator"
         queue = sqs_helper.create_queue(queue_name)
         sqs_helper.send_message(
@@ -278,7 +278,7 @@ class TestSQSHelper(unittest.TestCase):
         self.assertTrue(
             any(
                 queue_name in url
-                for url in moto.get_client("sqs").list_queues()["QueueUrls"]
+                for url in moto_testkit.get_client("sqs").list_queues()["QueueUrls"]
             )
         )
 
@@ -531,9 +531,9 @@ class TestFullIntegration(unittest.TestCase):
         asyncio.run(runner())
 
     @use_moto_testkit(auto_start=True, patch_aiobotocore=False)
-    def test_full_sync_decorator(self, moto):
+    def test_full_sync_decorator(self, moto_testkit):
         # S3
-        s3_helper = moto.s3_helper()
+        s3_helper = moto_testkit.s3_helper()
         s3_helper.create_bucket("full-bucket-sync-decorator")
         s3_helper.put_object(
             S3ObjectModel(bucket="full-bucket-sync-decorator", key="f.txt", body=b"abc")
@@ -543,11 +543,11 @@ class TestFullIntegration(unittest.TestCase):
         )
         self.assertIn(
             "full-bucket-sync-decorator",
-            [b["Name"] for b in moto.get_client("s3").list_buckets()["Buckets"]],
+            [b["Name"] for b in moto_testkit.get_client("s3").list_buckets()["Buckets"]],
         )
 
         # Dynamo
-        dynamo_helper = moto.dynamo_helper()
+        dynamo_helper = moto_testkit.dynamo_helper()
         dynamo_helper.create_table("full-users-sync-decorator", key_name="id")
         dynamo_helper.put_item(
             DynamoItemModel(
@@ -563,11 +563,11 @@ class TestFullIntegration(unittest.TestCase):
         )
         self.assertIn(
             "full-users-sync-decorator",
-            moto.get_client("dynamodb").list_tables()["TableNames"],
+            moto_testkit.get_client("dynamodb").list_tables()["TableNames"],
         )
 
         # SQS
-        sqs_helper = moto.sqs_helper()
+        sqs_helper = moto_testkit.sqs_helper()
         queue = sqs_helper.create_queue("full-q-sync-decorator")
         sqs_helper.send_message(
             SQSMessageModel(queue_url=queue["QueueUrl"], body="msg-with")
@@ -577,7 +577,7 @@ class TestFullIntegration(unittest.TestCase):
         self.assertTrue(
             any(
                 "full-q-sync-decorator" in url
-                for url in moto.get_client("sqs").list_queues()["QueueUrls"]
+                for url in moto_testkit.get_client("sqs").list_queues()["QueueUrls"]
             )
         )
 

@@ -50,9 +50,6 @@ class S3HelperTyped:
         client = await self._clients.get_async_client("s3")
 
         body_data = model.body
-        # 🚑 Contorno: moto + aiobotocore → garante que é BytesIO
-        if isinstance(body_data, (bytes, bytearray)):
-            body_data = io.BytesIO(body_data)
 
         return await client.put_object(
             Bucket=model.bucket, Key=model.key, Body=body_data
