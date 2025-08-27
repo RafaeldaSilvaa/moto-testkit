@@ -23,7 +23,7 @@ async def test_dynamodb_put_and_get(moto_kit: MotoTestKit) -> None:
         "MinhaTabela",
         [{"AttributeName": "id", "KeyType": "HASH"}],
         [{"AttributeName": "id", "AttributeType": "S"}],
-        {"ReadCapacityUnits": 5, "WriteCapacityUnits": 5}
+        {"ReadCapacityUnits": 5, "WriteCapacityUnits": 5},
     )
     await repo.put_item("MinhaTabela", {"id": {"S": "123"}})
     item = await repo.get_item("MinhaTabela", {"id": {"S": "123"}})

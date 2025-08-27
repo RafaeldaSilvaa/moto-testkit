@@ -1,8 +1,9 @@
 import pytest
 from typing import Generator, List, Dict, Any
 
-from aws_testkit.examples.cloudwatchlogs.synchronous.cloudwatchlogs_synchronous_repository import \
-    CloudWatchLogsRepository
+from aws_testkit.examples.cloudwatchlogs.synchronous.cloudwatchlogs_synchronous_repository import (
+    CloudWatchLogsRepository,
+)
 from aws_testkit.src import MotoTestKit
 
 
@@ -34,7 +35,5 @@ def test_put_log_events(cloudwatch_logs_repo: CloudWatchLogsRepository) -> None:
     """Validate putting log events returns a sequence token."""
     cloudwatch_logs_repo.create_log_group("my-group")
     cloudwatch_logs_repo.create_log_stream("my-group", "my-stream")
-    resp: Dict[str, Any] = cloudwatch_logs_repo.put_log_events(
-        "my-group", "my-stream", ["msg1", "msg2"]
-    )
+    resp: Dict[str, Any] = cloudwatch_logs_repo.put_log_events("my-group", "my-stream", ["msg1", "msg2"])
     assert "nextSequenceToken" in resp

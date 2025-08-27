@@ -1,6 +1,6 @@
 import pytest
 
-from aws_testkit.examples.event_bridge.synchronous.eventbridge_repository import EventBridgeRepository
+from aws_testkit.examples.event_bridge.synchronous.eventbridge_synchronous_repository import EventBridgeRepository
 from aws_testkit.src import MotoTestKit
 
 
@@ -8,9 +8,7 @@ from aws_testkit.src import MotoTestKit
 def moto_testkit_fixture() -> EventBridgeRepository:
     """Inicializa o MotoTestKit e retorna o repositório configurado."""
     moto_testkit = MotoTestKit(auto_start=True)
-    repository = EventBridgeRepository(
-        endpoint_url=moto_testkit.get_client("events").meta.endpoint_url
-    )
+    repository = EventBridgeRepository(endpoint_url=moto_testkit.get_client("events").meta.endpoint_url)
     yield repository
     moto_testkit.stop()
 

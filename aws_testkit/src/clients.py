@@ -13,10 +13,7 @@ class ClientFactory:
     def __init__(self, region: str) -> None:
         self.region: str = region
         self._sync_clients: Dict[str, BaseClient] = {}
-        self._async_clients: Dict[
-            str,
-            Tuple[aioboto3.Session, Any, BaseClient]
-        ] = {}
+        self._async_clients: Dict[str, Tuple[aioboto3.Session, Any, BaseClient]] = {}
         self._lock = threading.RLock()
         self._async_lock = asyncio.Lock()
 

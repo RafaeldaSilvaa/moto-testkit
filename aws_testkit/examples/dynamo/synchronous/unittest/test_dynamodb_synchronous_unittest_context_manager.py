@@ -13,7 +13,7 @@ class TestDynamoDBRepositoryContextManager(unittest.TestCase):
                 table_name="Users",
                 key_schema=[{"AttributeName": "id", "KeyType": "HASH"}],
                 attribute_definitions=[{"AttributeName": "id", "AttributeType": "S"}],
-                provisioned_throughput={"ReadCapacityUnits": 5, "WriteCapacityUnits": 5}
+                provisioned_throughput={"ReadCapacityUnits": 5, "WriteCapacityUnits": 5},
             )
             repo.put_item("Users", {"id": {"S": "1"}, "name": {"S": "Alice"}})
             item = repo.get_item("Users", {"id": {"S": "1"}})
@@ -26,7 +26,7 @@ class TestDynamoDBRepositoryContextManager(unittest.TestCase):
                 table_name="Users",
                 key_schema=[{"AttributeName": "id", "KeyType": "HASH"}],
                 attribute_definitions=[{"AttributeName": "id", "AttributeType": "S"}],
-                provisioned_throughput={"ReadCapacityUnits": 5, "WriteCapacityUnits": 5}
+                provisioned_throughput={"ReadCapacityUnits": 5, "WriteCapacityUnits": 5},
             )
             repo.put_item("Users", {"id": {"S": "1"}, "name": {"S": "Alice"}})
             items = repo.query_items("Users", "id = :id", {":id": {"S": "1"}})

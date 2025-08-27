@@ -7,19 +7,23 @@ from pydantic import BaseModel, Field
 
 from .clients import ClientFactory
 
+
 # ---------------- Models (Pydantic v1) ----------------
 class S3ObjectModel(BaseModel):
     bucket: str = Field(..., min_length=1)
     key: str = Field(..., min_length=1)
     body: bytes
 
+
 class DynamoItemModel(BaseModel):
     table: str = Field(..., min_length=1)
     item: Dict[str, Any]
 
+
 class SQSMessageModel(BaseModel):
     queue_url: str = Field(..., min_length=1)
     body: str
+
 
 # ---------------- Helpers (dependem de ClientFactory) ----------------
 class S3HelperTyped:
@@ -49,16 +53,13 @@ class S3HelperTyped:
         if isinstance(body_data, (bytes, bytearray)):
             body_data = io.BytesIO(body_data)
 
-        return await client.put_object(
-            Bucket=model.bucket,
-            Key=model.key,
-            Body=body_data
-        )
+        return await client.put_object(Bucket=model.bucket, Key=model.key, Body=body_data)
 
     async def get_object_body_async(self, bucket: str, key: str) -> bytes:
         client = await self._clients.get_async_client("s3")
         resp = await client.get_object(Bucket=bucket, Key=key)
         return await resp["Body"].read()
+
 
 class DynamoHelperTyped:
     def __init__(self, clients: ClientFactory) -> None:
@@ -88,6 +89,7 @@ class DynamoHelperTyped:
     async def get_item_async(self, table: str, key: dict) -> Dict[str, Any]:
         client = await self._clients.get_async_client("dynamodb")
         return await client.get_item(TableName=table, Key=key)
+
 
 class SQSHelperTyped:
     def __init__(self, clients: ClientFactory) -> None:

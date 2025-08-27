@@ -7,9 +7,7 @@ from aws_testkit.src import MotoTestKit
 class TestDynamoDBRepositoryFixture(unittest.TestCase):
     def setUp(self):
         self.kit = MotoTestKit(auto_start=True, patch_aiobotocore=False)
-        self.repo = DynamoDBRepository(
-            endpoint_url=self.kit.get_client("dynamodb").meta.endpoint_url
-        )
+        self.repo = DynamoDBRepository(endpoint_url=self.kit.get_client("dynamodb").meta.endpoint_url)
         self.repo.create_table(
             table_name="Users",
             key_schema=[{"AttributeName": "id", "KeyType": "HASH"}],

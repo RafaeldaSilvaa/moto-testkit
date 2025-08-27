@@ -1,10 +1,11 @@
 import asyncio
 
-from aws_testkit.examples.sqs. import SQSAsyncClient
+from aws_testkit.examples.sqs.asynchronous.sqs_asynchronous_client import SQSAsyncClient
 
 # Configurações da AWS - Substitua pelos seus valores
 AWS_REGION = "sua-regiao-aws"
 SQS_QUEUE_URL = "https://sqs.sua-regiao-aws.amazonaws.com/123456789012/seu-nome-de-fila"
+
 
 async def main():
     """
@@ -25,13 +26,14 @@ async def main():
     if messages:
         for message in messages:
             print(f"Mensagem recebida: {message['Body']}")
-            receipt_handle = message['ReceiptHandle']
+            receipt_handle = message["ReceiptHandle"]
 
             # 3. Excluir a mensagem após o processamento
             print(f"Excluindo mensagem com ReceiptHandle: {receipt_handle}")
             await sqs_client.delete_message(receipt_handle)
     else:
         print("Não há mensagens para processar.")
+
 
 if __name__ == "__main__":
     # Garante que o loop de eventos seja executado

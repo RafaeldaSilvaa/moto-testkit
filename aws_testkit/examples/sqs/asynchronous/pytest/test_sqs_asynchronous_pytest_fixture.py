@@ -1,0 +1,55 @@
+import pytest
+import pytest_asyncio
+import asyncio
+
+from aws_testkit.examples.sqs.asynchronous.sqs_asynchronous_client import SQSAsyncClient
+from aws_testkit.src import MotoTestKit
+
+AWS_REGION = "us-east-1"
+QUEUE_NAME = "fila-teste"
+
+
+@pytest_asyncio.fixture
+async def moto_testkit_fixture() -> MotoTestKit:
+    kit = MotoTestKit(auto_start=True, patch_aiobotocore=True)
+    yield kit
+    await kit.close_async_clients()
+    kit.stop()
+
+
+@pytest.mark.asyncio
+async def test_sqs_basic_flow_with_fixture(moto_testkit_fixture: MotoTestKit) -> None:
+    # cria fila fake
+    sqs_client = moto_testkit_fixture.get_client("sqs")
+    queue = sqs_client.create_queue(QueueName="test-queue")
+    queue_url = queue["QueueUrl"]
+
+    my_sqs = SQSAsyncClient(region_name=moto_testkit_fixture.region, queue_url=queue_url)
+    send_resp = await my_sqs.send_message("Hello MotoTestKit!")
+    assert "MessageId" in send_resp
+
+    messages = await my_sqs.receive_messages()
+    assert len(messages) == 1
+    assert messages[0]["Body"] == "Hello MotoTestKit!"
+
+    receipt_handle = messages[0]["ReceiptHandle"]
+    del_resp = await my_sqs.delete_message(receipt_handle)
+    assert del_resp["ResponseMetadata"]["HTTPStatusCode"] == 200
+
+
+@pytest.mark.asyncio
+async def test_sqs_send_receive_delete_with_fixture(moto_testkit_fixture: MotoTestKit) -> None:
+    sqs_client_boto = await moto_testkit_fixture.get_async_client("sqs")
+    create_resp = await sqs_client_boto.create_queue(QueueName=QUEUE_NAME)
+    queue_url = create_resp["QueueUrl"]
+
+    sqs_client = SQSAsyncClient(region_name=AWS_REGION, queue_url=queue_url)
+    message_to_send = "Mensagem de teste via pytest + Moto"
+    await sqs_client.send_message(message_to_send)
+    await asyncio.sleep(0.1)
+
+    messages = await sqs_client.receive_messages()
+    assert messages
+    for message in messages:
+        assert message["Body"] == message_to_send
+        await sqs_client.delete_message(message["ReceiptHandle"])

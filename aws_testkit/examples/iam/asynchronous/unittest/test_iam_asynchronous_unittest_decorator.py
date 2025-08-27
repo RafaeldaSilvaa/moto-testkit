@@ -1,5 +1,5 @@
 import unittest
-from aws_testkit.examples.iam.asynchronous.iam_async_repository import IAMAsyncRepository
+from aws_testkit.examples.iam.asynchronous.iam_asynchronous_repository import IAMAsyncRepository
 from aws_testkit.src.moto_testkit import use_moto_testkit, AutoMotoTestKit
 
 

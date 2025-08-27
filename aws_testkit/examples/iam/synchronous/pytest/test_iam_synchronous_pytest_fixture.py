@@ -1,6 +1,6 @@
 import pytest
 
-from aws_testkit.examples.iam.synchronous.iam_repository import IAMRepository
+from aws_testkit.examples.iam.synchronous.iam_synchronous_repository import IAMRepository
 from aws_testkit.src import MotoTestKit
 
 
@@ -8,9 +8,7 @@ from aws_testkit.src import MotoTestKit
 def moto_testkit_fixture() -> IAMRepository:
     """Inicializa o MotoTestKit e retorna o repositório configurado."""
     moto_testkit = MotoTestKit(auto_start=True)
-    repository = IAMRepository(
-        endpoint_url=moto_testkit.get_client("iam").meta.endpoint_url
-    )
+    repository = IAMRepository(endpoint_url=moto_testkit.get_client("iam").meta.endpoint_url)
     yield repository
     moto_testkit.stop()
 

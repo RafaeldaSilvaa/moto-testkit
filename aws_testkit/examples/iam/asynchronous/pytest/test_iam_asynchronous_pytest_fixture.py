@@ -1,6 +1,6 @@
 import pytest
 import pytest_asyncio
-from aws_testkit.examples.iam.asynchronous.iam_async_repository import IAMAsyncRepository
+from aws_testkit.examples.iam.asynchronous.iam_asynchronous_repository import IAMAsyncRepository
 from aws_testkit.src import MotoTestKit
 
 

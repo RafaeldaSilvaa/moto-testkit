@@ -20,7 +20,7 @@ class TestDynamoDBAsyncRepositoryWithFixture(unittest.IsolatedAsyncioTestCase):
             "MinhaTabela",
             [{"AttributeName": "id", "KeyType": "HASH"}],
             [{"AttributeName": "id", "AttributeType": "S"}],
-            {"ReadCapacityUnits": 5, "WriteCapacityUnits": 5}
+            {"ReadCapacityUnits": 5, "WriteCapacityUnits": 5},
         )
         await self.repo.put_item("MinhaTabela", {"id": {"S": "123"}})
         item: Dict[str, Any] = await self.repo.get_item("MinhaTabela", {"id": {"S": "123"}})

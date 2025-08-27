@@ -4,12 +4,14 @@ from aws_testkit.src.helpers import S3ObjectModel, DynamoItemModel, SQSMessageMo
 
 AWS_REGION = "us-east-1"
 
+
 @pytest.fixture
 def moto_testkit():
     testkit = MotoTestKit(auto_start=True, patch_aiobotocore=True)
     yield testkit
     testkit.close_clients()
     testkit.stop()
+
 
 # -------- SYNC --------
 def test_sync_s3_dynamo_sqs(moto_testkit):
@@ -32,6 +34,7 @@ def test_sync_s3_dynamo_sqs(moto_testkit):
     received_messages = sqs_helper.receive_messages(created_queue["QueueUrl"])
     assert received_messages["Messages"][0]["Body"] == "hello"
 
+
 # -------- ASYNC --------
 @pytest.mark.asyncio
 async def test_async_s3_dynamo_sqs(moto_testkit):
@@ -44,7 +47,9 @@ async def test_async_s3_dynamo_sqs(moto_testkit):
     # DynamoDB
     dynamo_helper = moto_testkit.dynamo_helper()
     dynamo_helper.create_table("products_table", key_name="sku")
-    await dynamo_helper.put_item_async(DynamoItemModel(table="products_table", item={"sku": {"S": "P1"}, "price": {"N": "9"}}))
+    await dynamo_helper.put_item_async(
+        DynamoItemModel(table="products_table", item={"sku": {"S": "P1"}, "price": {"N": "9"}})
+    )
     product_item = await dynamo_helper.get_item_async("products_table", {"sku": {"S": "P1"}})
     assert product_item["Item"]["price"]["N"] == "9"
 
@@ -54,6 +59,7 @@ async def test_async_s3_dynamo_sqs(moto_testkit):
     await sqs_helper.send_message_async(SQSMessageModel(queue_url=created_queue["QueueUrl"], body="world"))
     received_messages = await sqs_helper.receive_messages_async(created_queue["QueueUrl"])
     assert received_messages["Messages"][0]["Body"] == "world"
+
 
 # -------- CONTEXT MANAGER --------
 @pytest.mark.asyncio

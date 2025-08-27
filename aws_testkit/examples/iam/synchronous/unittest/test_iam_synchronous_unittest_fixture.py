@@ -1,6 +1,6 @@
 import unittest
 
-from aws_testkit.examples.iam.synchronous.iam_repository import IAMRepository
+from aws_testkit.examples.iam.synchronous.iam_synchronous_repository import IAMRepository
 from aws_testkit.src import MotoTestKit
 
 

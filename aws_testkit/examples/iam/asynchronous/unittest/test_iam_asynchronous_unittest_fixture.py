@@ -1,6 +1,6 @@
 import unittest
 from aws_testkit.src import MotoTestKit
-from aws_testkit.examples.iam.asynchronous.iam_async_repository import IAMAsyncRepository
+from aws_testkit.examples.iam.asynchronous.iam_asynchronous_repository import IAMAsyncRepository
 
 
 class TestIAMRepositoryFixtureMotoTestKit(unittest.IsolatedAsyncioTestCase):

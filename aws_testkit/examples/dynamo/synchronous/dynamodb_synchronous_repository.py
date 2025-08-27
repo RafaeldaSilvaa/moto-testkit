@@ -8,12 +8,14 @@ class DynamoDBRepository:
     def __init__(self, endpoint_url: Optional[str] = None, region_name: str = "us-east-1"):
         self.client = boto3.client("dynamodb", endpoint_url=endpoint_url, region_name=region_name)
 
-    def create_table(self, table_name: str, key_schema: List[Dict], attribute_definitions: List[Dict], provisioned_throughput: Dict):
+    def create_table(
+        self, table_name: str, key_schema: List[Dict], attribute_definitions: List[Dict], provisioned_throughput: Dict
+    ):
         return self.client.create_table(
             TableName=table_name,
             KeySchema=key_schema,
             AttributeDefinitions=attribute_definitions,
-            ProvisionedThroughput=provisioned_throughput
+            ProvisionedThroughput=provisioned_throughput,
         )
 
     def put_item(self, table_name: str, item: Dict):
@@ -37,6 +39,6 @@ class DynamoDBRepository:
         resp = self.client.query(
             TableName=table_name,
             KeyConditionExpression=key_condition_expression,
-            ExpressionAttributeValues=expression_attribute_values
+            ExpressionAttributeValues=expression_attribute_values,
         )
         return resp.get("Items", [])

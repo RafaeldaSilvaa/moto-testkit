@@ -18,6 +18,7 @@ from .clients import ClientFactory
 _default_logger = logging.getLogger("aws_testkit")
 _default_logger.addHandler(logging.NullHandler())
 
+
 class MotoTestKit:
     def __init__(
         self,
@@ -120,16 +121,18 @@ class MotoTestKit:
     # ---------- helpers tipados ----------
     def s3_helper(self):
         from .helpers import S3HelperTyped
+
         return S3HelperTyped(self.clients)
 
     def dynamo_helper(self):
         from .helpers import DynamoHelperTyped
+
         return DynamoHelperTyped(self.clients)
 
     def sqs_helper(self):
         from .helpers import SQSHelperTyped
-        return SQSHelperTyped(self.clients)
 
+        return SQSHelperTyped(self.clients)
 
     # ---------- patches ----------
     def _apply_aiobotocore_patches(self) -> None:
@@ -141,6 +144,7 @@ class MotoTestKit:
         async def _convert_to_response_dict_compat(http_response, operation_model):
             async def _await_or_value(obj):
                 return await obj if inspect.isawaitable(obj) else obj
+
             headers = getattr(http_response, "headers", {}) or {}
             status = getattr(http_response, "status_code", 200)
             raw = getattr(http_response, "raw", b"")
@@ -172,6 +176,7 @@ class MotoTestKit:
     def _patch_crc32_checker():
         import binascii
         from aiobotocore.retryhandler import AioCRC32Checker
+
         original = AioCRC32Checker._check_response
 
         async def _check_response_compat(self, attempt_number, response):
@@ -190,6 +195,7 @@ class MotoTestKit:
         patcher = patch("aiobotocore.retryhandler.AioCRC32Checker._check_response", _check_response_compat)
         patcher.start()
         return patcher
+
 
 class AutoMotoTestKit(MotoTestKit):
     # --- Contexto síncrono ---
@@ -221,6 +227,7 @@ class AutoMotoTestKit(MotoTestKit):
             pass
         self.stop()
 
+
 def use_moto_testkit(obj=None, *, auto_start=True, **kwargs):
     def _inject_into_self(args, mt):
         """Injeta no self quando rodando unittest.TestCase."""
@@ -232,13 +239,16 @@ def use_moto_testkit(obj=None, *, auto_start=True, **kwargs):
             return func  # evita decorar duas vezes
 
         if inspect.iscoroutinefunction(func):
+
             @functools.wraps(func)
             async def wrapper(*args, **inner_kwargs):
                 async with AutoMotoTestKit(auto_start=auto_start, **kwargs) as mt:
                     _inject_into_self(args, mt)
                     inner_kwargs.setdefault("moto_testkit", mt)
                     return await func(*args, **inner_kwargs)
+
         else:
+
             @functools.wraps(func)
             def wrapper(*args, **inner_kwargs):
                 with AutoMotoTestKit(auto_start=auto_start, **kwargs) as mt:
@@ -258,8 +268,7 @@ def use_moto_testkit(obj=None, *, auto_start=True, **kwargs):
     def _decorate_class(cls):
         for name, attr in list(cls.__dict__.items()):
             if callable(attr) and (
-                name.startswith("test_")
-                or name in ("setUp", "tearDown", "setUpClass", "tearDownClass")
+                name.startswith("test_") or name in ("setUp", "tearDown", "setUpClass", "tearDownClass")
             ):
                 setattr(cls, name, _decorate_func(attr))
         return cls

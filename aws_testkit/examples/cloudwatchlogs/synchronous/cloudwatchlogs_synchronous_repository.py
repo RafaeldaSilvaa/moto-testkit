@@ -14,11 +14,7 @@ class CloudWatchLogsRepository:
 
     def put_log_events(self, log_group_name: str, log_stream_name: str, messages: list):
         events = [{"timestamp": 123456789, "message": m} for m in messages]
-        return self.client.put_log_events(
-            logGroupName=log_group_name,
-            logStreamName=log_stream_name,
-            logEvents=events
-        )
+        return self.client.put_log_events(logGroupName=log_group_name, logStreamName=log_stream_name, logEvents=events)
 
     def describe_log_groups(self):
         return self.client.describe_log_groups().get("logGroups", [])
