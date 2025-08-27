@@ -20,7 +20,7 @@ jobs:
         with:
           python-version: '3.11'
       - run: |
-          pip install --upgrade pip
+          python -m pip install --upgrade pip
           pip install -r requirements-dev.txt
       - name: Prepare test environment
         run: |
@@ -40,7 +40,7 @@ jobs:
         with:
           source_branch: develop
           destination_branch: master
-          github_token: ${{ secrets.REPO_SYNC_TOKEN }}
+          github_token: ${{ secrets.REPO_SYNC_TOKEN }} # PAT
           pr_title: 'PR para revisão: develop → master'
-          pr_body: 'Gerado automaticamente após merge na develop.'
+          pr_body: 'Gerado automaticamente após merge em develop.'
           pr_label: 'release-candidate,review'
