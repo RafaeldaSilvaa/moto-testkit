@@ -1,4 +1,4 @@
-name: CI master → release
+name: CI develop → release
 
 on:
   push:
