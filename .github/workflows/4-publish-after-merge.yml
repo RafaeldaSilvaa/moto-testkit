@@ -1,4 +1,4 @@
-name: Publicar no PyPI após merge
+name: Publicar no PyPI após Merge na master
 
 on:
   push:
