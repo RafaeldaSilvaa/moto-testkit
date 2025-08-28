@@ -11,16 +11,28 @@ permissions:
 
 jobs:
   create-release-branch:
+    # Só roda quando houver merge de PR ou squash
     if: contains(github.event.head_commit.message, 'Merge pull request') || contains(github.event.head_commit.message, '(#')
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout do código
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           fetch-tags: true
 
       - name: Buscar tags
         run: git fetch --tags --force
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar dependência toml
+        run: |
+          python -m pip install --upgrade pip
+          pip install toml
 
       - name: Ler versão do pyproject.toml
         id: version
