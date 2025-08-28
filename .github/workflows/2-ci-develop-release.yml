@@ -1,9 +1,9 @@
-name: CI develop → release
+name: CI master → release
 
 on:
   push:
     branches:
-      - develop
+      - master
 
 permissions:
   contents: write
@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   create-release-branch:
-    # Só roda quando houver merge de PR ou squash
+    # Só roda quando houver merge de PR ou squash para master
     if: contains(github.event.head_commit.message, 'Merge pull request') || contains(github.event.head_commit.message, '(#')
     runs-on: ubuntu-latest
     steps:
@@ -24,15 +24,12 @@ jobs:
       - name: Buscar tags
         run: git fetch --tags --force
 
-      - name: Configurar Python
+      - name: Configurar Python e instalar toml
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-
-      - name: Instalar dependência toml
-        run: |
-          python -m pip install --upgrade pip
-          pip install toml
+      - run: |
+          python -m pip install --upgrade pip toml
 
       - name: Ler versão do pyproject.toml
         id: version
@@ -41,23 +38,23 @@ jobs:
           echo "Versão no pyproject.toml: $VERSION"
           echo "next_tag=v$VERSION" >> $GITHUB_OUTPUT
 
-      - name: Criar branch de release se não existir
+      - name: Criar branch release se não existir
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           if git ls-remote --exit-code --heads origin release/${{ steps.version.outputs.next_tag }}; then
             echo "Branch release já existe."
           else
-            git checkout -b release/${{ steps.version.outputs.next_tag }}
+            git checkout -b release/${{ steps.version.outputs.next_tag }} origin/master
             git push origin release/${{ steps.version.outputs.next_tag }}
           fi
 
-      - name: Abrir PR develop → release
+      - name: Abrir PR master → release
         uses: repo-sync/pull-request@v2
         with:
-          source_branch: develop
+          source_branch: master
           destination_branch: release/${{ steps.version.outputs.next_tag }}
           github_token: ${{ secrets.REPO_SYNC_TOKEN }}
-          pr_title: 'Merge develop → release/${{ steps.version.outputs.next_tag }}'
+          pr_title: 'Merge master → release/${{ steps.version.outputs.next_tag }}'
           pr_body: 'Preparando release ${{ steps.version.outputs.next_tag }}.'
           pr_label: 'prepare-release'
