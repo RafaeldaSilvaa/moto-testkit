@@ -1,6 +1,6 @@
 import sqlite3
 import time
-from typing import Any
+from typing import Any, Union
 
 import boto3
 
@@ -19,8 +19,8 @@ class RDSRepository:
         db_instance_identifier: str,
         engine: str,
         db_instance_class: str,
-        master_username: str | None = None,
-        master_user_password: str | None = None,
+        master_username: Union[str, None] = None,
+        master_user_password: Union[str, None] = None,
         allocated_storage: int | None = None,
         publicly_accessible: bool = False,
         tags: dict[str, str] | None = None,

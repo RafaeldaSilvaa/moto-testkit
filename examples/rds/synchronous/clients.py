@@ -1,3 +1,5 @@
+from typing import Union
+
 import boto3
 
 from .config import settings
@@ -5,7 +7,7 @@ from .config import settings
 
 class AwsClients:
     def __init__(
-        self, region_name: str | None = None, rds_endpoint_url: str | None = None
+        self, region_name: Union[str, None] = None, rds_endpoint_url: Union[str, None] = None
     ):
         self._region = region_name or settings.aws_region
         self._rds_endpoint = rds_endpoint_url or settings.rds_endpoint_url
