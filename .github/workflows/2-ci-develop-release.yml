@@ -35,7 +35,6 @@ jobs:
       - run: pytest --cov=./ --cov-report=term
 
   create-release-pr:
-    if: contains(github.event.head_commit.message, 'Merge pull request') || contains(github.event.head_commit.message, '(#')
     needs: tests
     runs-on: ubuntu-latest
     steps:
