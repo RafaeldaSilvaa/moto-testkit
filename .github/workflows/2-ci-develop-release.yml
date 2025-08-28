@@ -11,10 +11,12 @@ permissions:
 
 jobs:
   create-release-branch:
+    # Só roda quando houver merge de PR ou squash
     if: contains(github.event.head_commit.message, 'Merge pull request') || contains(github.event.head_commit.message, '(#')
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout do código
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           fetch-tags: true
@@ -22,18 +24,22 @@ jobs:
       - name: Buscar tags
         run: git fetch --tags --force
 
-      - name: Calcular próxima tag
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar dependência toml
+        run: |
+          python -m pip install --upgrade pip
+          pip install toml
+
+      - name: Ler versão do pyproject.toml
         id: version
         run: |
-          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
-          BASE="${LAST_TAG#v}"
-          MAJOR=$(echo $BASE | cut -d. -f1)
-          MINOR=$(echo $BASE | cut -d. -f2)
-          PATCH=$(echo $BASE | cut -d. -f3)
-          PATCH=$((PATCH+1))
-          NEXT_TAG="v$MAJOR.$MINOR.$PATCH"
-          echo "next_tag=$NEXT_TAG" >> $GITHUB_OUTPUT
-          echo "➡️ Próxima branch release: release/$NEXT_TAG"
+          VERSION=$(python -c "import toml; print(toml.load('pyproject.toml')['project']['version'])")
+          echo "Versão no pyproject.toml: $VERSION"
+          echo "next_tag=v$VERSION" >> $GITHUB_OUTPUT
 
       - name: Criar branch de release se não existir
         run: |
@@ -53,5 +59,5 @@ jobs:
           destination_branch: release/${{ steps.version.outputs.next_tag }}
           github_token: ${{ secrets.REPO_SYNC_TOKEN }}
           pr_title: 'Merge develop → release/${{ steps.version.outputs.next_tag }}'
-          pr_body: 'Preparando release ${{ steps.version.outputs.next_tag }}. Edite o pyproject.toml com a versão final antes do merge para master.'
+          pr_body: 'Preparando release ${{ steps.version.outputs.next_tag }}.'
           pr_label: 'prepare-release'
