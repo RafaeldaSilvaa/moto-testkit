@@ -10,45 +10,19 @@ permissions:
   pull-requests: write
 
 jobs:
-  tests:
+  create-release-branch:
     if: contains(github.event.head_commit.message, 'Merge pull request') || contains(github.event.head_commit.message, '(#')
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [ "3.10", "3.11", "3.12", "3.13" ]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
-      - run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements-dev.txt ruff bandit
-      - run: ruff check . --fix --exit-zero
-      - run: bandit -r . --exit-zero
-      - name: Prepare test environment
-        run: |
-          find . -type d \( -path "./.*" -o -path "./.venv*" \) \
-            -prune -o -type d \
-            -exec sh -c '[ -f "$0/__init__.py" ] || touch "$0/__init__.py"' {} \;
-          export PYTHONPATH="$PYTHONPATH:$(pwd)"
-      - run: pytest --cov=./ --cov-report=term
-
-  create-release-pr:
-    needs: tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - run: |
-          python -m pip install --upgrade pip
-          pip install toml
+          fetch-tags: true
 
-      - name: Determinar próxima versão e atualizar pyproject.toml
+      - name: Buscar tags
+        run: git fetch --tags --force
+
+      - name: Calcular próxima tag
         id: version
         run: |
           LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
@@ -59,33 +33,18 @@ jobs:
           PATCH=$((PATCH+1))
           NEXT_TAG="v$MAJOR.$MINOR.$PATCH"
           echo "next_tag=$NEXT_TAG" >> $GITHUB_OUTPUT
+          echo "➡️ Próxima branch release: release/$NEXT_TAG"
 
-          echo "Atualizando versão para ${NEXT_TAG#v} no pyproject.toml"
-          python - <<EOF
-          import toml
-          path = "pyproject.toml"
-          data = toml.load(path)
-          data["project"]["version"] = "${NEXT_TAG#v}"
-          with open(path, "w") as f:
-              toml.dump(data, f)
-          EOF
-
-      - name: Criar ou atualizar branch release e commitar bump
+      - name: Criar branch de release se não existir
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
           if git ls-remote --exit-code --heads origin release/${{ steps.version.outputs.next_tag }}; then
-            echo "Branch release já existe. Atualizando..."
-            git checkout release/${{ steps.version.outputs.next_tag }}
+            echo "Branch release já existe."
           else
-            echo "Criando nova branch release..."
             git checkout -b release/${{ steps.version.outputs.next_tag }}
+            git push origin release/${{ steps.version.outputs.next_tag }}
           fi
-
-          git add pyproject.toml
-          git commit -m "chore: bump version to ${{ steps.version.outputs.next_tag }}"
-          git push origin release/${{ steps.version.outputs.next_tag }}
 
       - name: Abrir PR develop → release
         uses: repo-sync/pull-request@v2
@@ -94,5 +53,5 @@ jobs:
           destination_branch: release/${{ steps.version.outputs.next_tag }}
           github_token: ${{ secrets.REPO_SYNC_TOKEN }}
           pr_title: 'Merge develop → release/${{ steps.version.outputs.next_tag }}'
-          pr_body: 'Preparando release ${{ steps.version.outputs.next_tag }}'
+          pr_body: 'Preparando release ${{ steps.version.outputs.next_tag }}. Edite o pyproject.toml com a versão final antes do merge para master.'
           pr_label: 'prepare-release'
