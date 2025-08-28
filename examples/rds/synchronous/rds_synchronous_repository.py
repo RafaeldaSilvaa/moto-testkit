@@ -1,6 +1,6 @@
 import sqlite3
 import time
-from typing import Any
+from typing import Any, Union
 
 import boto3
 
@@ -19,11 +19,11 @@ class RDSRepository:
         db_instance_identifier: str,
         engine: str,
         db_instance_class: str,
-        master_username: str | None = None,
-        master_user_password: str | None = None,
-        allocated_storage: int | None = None,
+        master_username: Union[str, None] = None,
+        master_user_password: Union[str, None] = None,
+        allocated_storage: Union[int, None] = None,
         publicly_accessible: bool = False,
-        tags: dict[str, str] | None = None,
+        tags: Union[dict[str, str] , None] = None,
         wait: bool = True,
         wait_timeout_seconds: float = 60.0,
     ) -> dict:
@@ -54,7 +54,7 @@ class RDSRepository:
                 time.sleep(2)
         return instance
 
-    def describe_instance(self, db_instance_identifier: str) -> dict | None:
+    def describe_instance(self, db_instance_identifier: str) -> Union[dict, None]:
         resp = self._client.describe_db_instances(
             DBInstanceIdentifier=db_instance_identifier
         )
