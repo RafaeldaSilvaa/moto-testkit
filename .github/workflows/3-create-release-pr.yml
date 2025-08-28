@@ -69,6 +69,16 @@ jobs:
 
           echo "next_tag=$NEXT_TAG" >> $GITHUB_OUTPUT
 
+      - name: Criar e enviar branch de release
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b release/${{ steps.version.outputs.next_tag }}
+          git add pyproject.toml
+          git commit -m "chore: bump version to ${{ steps.version.outputs.next_tag }}"
+          git push origin release/${{ steps.version.outputs.next_tag }}
+
+
       - name: Criar branch e PR de release
         uses: repo-sync/pull-request@v2
         with:
