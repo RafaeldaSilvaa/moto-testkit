@@ -1,7 +1,9 @@
 name: Criar Release e Abrir PR para master
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - master   # dispara ao merge de develop → master
 
 permissions:
   contents: write
@@ -73,6 +75,6 @@ jobs:
           source_branch: release/${{ steps.version.outputs.next_tag }}
           destination_branch: master
           github_token: ${{ secrets.REPO_SYNC_TOKEN }}
-          pr_title: 'Release ${{ steps.version.outputs.next_tag }}'
+          pr_title: '[release] ${{ steps.version.outputs.next_tag }}'
           pr_body: 'Atualiza versão para ${{ steps.version.outputs.next_tag }} e prepara publicação no PyPI.'
           pr_label: 'release,auto-pr'
