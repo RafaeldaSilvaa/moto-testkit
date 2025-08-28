@@ -21,7 +21,7 @@ class RDSRepository:
         db_instance_class: str,
         master_username: Union[str, None] = None,
         master_user_password: Union[str, None] = None,
-        allocated_storage: int | None = None,
+        allocated_storage: Union[int, None] = None,
         publicly_accessible: bool = False,
         tags: dict[str, str] | None = None,
         wait: bool = True,
