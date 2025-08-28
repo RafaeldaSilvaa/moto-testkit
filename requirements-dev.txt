@@ -14,3 +14,4 @@ pydantic==2.11.7
 nox==2025.5.1
 tox==4.28.4
 psycopg2==2.9.10
+bandit>=1.7
