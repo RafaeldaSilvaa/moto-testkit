@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   tests:
-    if: contains(github.event.head_commit.message, 'Merge pull request') || contains(github.event.head_commit.message, '(#')
+    if: contains(github.event.head_commit.message, 'Merge') || contains(github.event.head_commit.message, '(#')
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -35,7 +35,6 @@ jobs:
       - run: pytest --cov=./ --cov-report=term
 
   create-master-pr:
-    if: contains(github.event.head_commit.message, 'Merge pull request') || contains(github.event.head_commit.message, '(#')
     needs: tests
     runs-on: ubuntu-latest
     steps:
