@@ -48,7 +48,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install toml
 
-      - name: Determinar próxima versão
+      - name: Determinar próxima versão e atualizar pyproject.toml
         id: version
         run: |
           LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
@@ -60,14 +60,32 @@ jobs:
           NEXT_TAG="v$MAJOR.$MINOR.$PATCH"
           echo "next_tag=$NEXT_TAG" >> $GITHUB_OUTPUT
 
-      - name: Criar branch release se não existir
+          echo "Atualizando versão para ${NEXT_TAG#v} no pyproject.toml"
+          python - <<EOF
+          import toml
+          path = "pyproject.toml"
+          data = toml.load(path)
+          data["project"]["version"] = "${NEXT_TAG#v}"
+          with open(path, "w") as f:
+              toml.dump(data, f)
+          EOF
+
+      - name: Criar ou atualizar branch release e commitar bump
         run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
           if git ls-remote --exit-code --heads origin release/${{ steps.version.outputs.next_tag }}; then
-            echo "Branch release já existe"
+            echo "Branch release já existe. Atualizando..."
+            git checkout release/${{ steps.version.outputs.next_tag }}
           else
+            echo "Criando nova branch release..."
             git checkout -b release/${{ steps.version.outputs.next_tag }}
-            git push origin release/${{ steps.version.outputs.next_tag }}
           fi
+
+          git add pyproject.toml
+          git commit -m "chore: bump version to ${{ steps.version.outputs.next_tag }}"
+          git push origin release/${{ steps.version.outputs.next_tag }}
 
       - name: Abrir PR develop → release
         uses: repo-sync/pull-request@v2
