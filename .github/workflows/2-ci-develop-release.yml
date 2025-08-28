@@ -1,9 +1,9 @@
-name: Criar Release e Abrir PR para master
+name: CI develop → release
 
 on:
   push:
     branches:
-      - master   # dispara ao merge de develop → master
+      - develop
 
 permissions:
   contents: write
@@ -11,10 +11,11 @@ permissions:
 
 jobs:
   tests:
+    if: contains(github.event.head_commit.message, 'Merge pull request') || contains(github.event.head_commit.message, '(#')
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.10", "3.11", "3.12", "3.13"]
+        python-version: [ "3.10", "3.11", "3.12", "3.13" ]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -47,7 +48,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install toml
 
-      - name: Determinar próxima tag e atualizar versão
+      - name: Determinar próxima versão
         id: version
         run: |
           LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
@@ -57,34 +58,23 @@ jobs:
           PATCH=$(echo $BASE | cut -d. -f3)
           PATCH=$((PATCH+1))
           NEXT_TAG="v$MAJOR.$MINOR.$PATCH"
-
-          echo "Nova tag: $NEXT_TAG"
-          python - <<EOF
-          import toml
-          data = toml.load("pyproject.toml")
-          data["project"]["version"] = "${NEXT_TAG#v}"
-          with open("pyproject.toml", "w") as f:
-              toml.dump(data, f)
-          EOF
-
           echo "next_tag=$NEXT_TAG" >> $GITHUB_OUTPUT
 
-      - name: Criar e enviar branch de release
+      - name: Criar branch release se não existir
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git checkout -b release/${{ steps.version.outputs.next_tag }}
-          git add pyproject.toml
-          git commit -m "chore: bump version to ${{ steps.version.outputs.next_tag }}"
-          git push origin release/${{ steps.version.outputs.next_tag }}
+          if git ls-remote --exit-code --heads origin release/${{ steps.version.outputs.next_tag }}; then
+            echo "Branch release já existe"
+          else
+            git checkout -b release/${{ steps.version.outputs.next_tag }}
+            git push origin release/${{ steps.version.outputs.next_tag }}
+          fi
 
-
-      - name: Criar branch e PR de release
+      - name: Abrir PR develop → release
         uses: repo-sync/pull-request@v2
         with:
-          source_branch: release/${{ steps.version.outputs.next_tag }}
-          destination_branch: master
+          source_branch: develop
+          destination_branch: release/${{ steps.version.outputs.next_tag }}
           github_token: ${{ secrets.REPO_SYNC_TOKEN }}
-          pr_title: '[release] ${{ steps.version.outputs.next_tag }}'
-          pr_body: 'Atualiza versão para ${{ steps.version.outputs.next_tag }} e prepara publicação no PyPI.'
-          pr_label: 'release,auto-pr'
+          pr_title: 'Merge develop → release/${{ steps.version.outputs.next_tag }}'
+          pr_body: 'Preparando release ${{ steps.version.outputs.next_tag }}'
+          pr_label: 'prepare-release'
