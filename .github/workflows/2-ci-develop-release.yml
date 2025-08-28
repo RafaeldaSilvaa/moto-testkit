@@ -11,7 +11,6 @@ permissions:
 
 jobs:
   create-release-branch:
-    # Só roda quando houver merge de PR ou squash
     if: contains(github.event.head_commit.message, 'Merge pull request') || contains(github.event.head_commit.message, '(#')
     runs-on: ubuntu-latest
     steps:
@@ -38,26 +37,68 @@ jobs:
         id: version
         run: |
           VERSION=$(python -c "import toml; print(toml.load('pyproject.toml')['project']['version'])")
-          echo "Versão no pyproject.toml: $VERSION"
+          echo "Versão atual no pyproject.toml: $VERSION"
           echo "next_tag=v$VERSION" >> $GITHUB_OUTPUT
 
+      - name: Verificar se branch já existe e se é idêntica
+        id: check_branch
+        run: |
+          if git ls-remote --exit-code --heads origin release/${{ steps.version.outputs.next_tag }}; then
+            echo "release_branch_exists=true" >> $GITHUB_OUTPUT
+            git fetch origin release/${{ steps.version.outputs.next_tag }}:refs/remotes/origin/release/${{ steps.version.outputs.next_tag }}
+            if [ "$(git rev-parse origin/develop)" = "$(git rev-parse origin/release/${{ steps.version.outputs.next_tag }})" ]; then
+              echo "branches_identical=true" >> $GITHUB_OUTPUT
+            else
+              echo "branches_identical=false" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "release_branch_exists=false" >> $GITHUB_OUTPUT
+            echo "branches_identical=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Gerar nova versão se branch é idêntica
+        if: steps.check_branch.outputs.release_branch_exists == 'true' && steps.check_branch.outputs.branches_identical == 'true'
+        id: bump_version
+        run: |
+          BASE="${{ steps.version.outputs.next_tag#v }}"
+          MAJOR=$(echo $BASE | cut -d. -f1)
+          MINOR=$(echo $BASE | cut -d. -f2)
+          PATCH=$(echo $BASE | cut -d. -f3)
+          PATCH=$((PATCH+1))
+          NEW_TAG="v$MAJOR.$MINOR.$PATCH"
+          echo "next_tag=$NEW_TAG" >> $GITHUB_OUTPUT
+
+          # Atualiza pyproject.toml com a nova versão
+          python - <<EOF
+          import toml
+          path = "pyproject.toml"
+          data = toml.load(path)
+          data["project"]["version"] = "${NEW_TAG#v}"
+          with open(path, "w") as f:
+              toml.dump(data, f)
+          EOF
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b release/$NEW_TAG origin/develop
+          git add pyproject.toml
+          git commit -m "chore: bump version to $NEW_TAG"
+          git push origin release/$NEW_TAG
+
       - name: Criar branch de release se não existir
+        if: steps.check_branch.outputs.release_branch_exists == 'false'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          if git ls-remote --exit-code --heads origin release/${{ steps.version.outputs.next_tag }}; then
-            echo "Branch release já existe."
-          else
-            git checkout -b release/${{ steps.version.outputs.next_tag }}
-            git push origin release/${{ steps.version.outputs.next_tag }}
-          fi
+          git checkout -b release/${{ steps.version.outputs.next_tag }} origin/develop
+          git push origin release/${{ steps.version.outputs.next_tag }}
 
       - name: Abrir PR develop → release
         uses: repo-sync/pull-request@v2
         with:
           source_branch: develop
-          destination_branch: release/${{ steps.version.outputs.next_tag }}
+          destination_branch: release/${{ steps.bump_version.outputs.next_tag || steps.version.outputs.next_tag }}
           github_token: ${{ secrets.REPO_SYNC_TOKEN }}
-          pr_title: 'Merge develop → release/${{ steps.version.outputs.next_tag }}'
-          pr_body: 'Preparando release ${{ steps.version.outputs.next_tag }}.'
+          pr_title: 'Merge develop → release/${{ steps.bump_version.outputs.next_tag || steps.version.outputs.next_tag }}'
+          pr_body: 'Preparando release ${{ steps.bump_version.outputs.next_tag || steps.version.outputs.next_tag }}.'
           pr_label: 'prepare-release'
