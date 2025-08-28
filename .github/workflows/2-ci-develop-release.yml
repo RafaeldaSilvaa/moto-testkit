@@ -1,0 +1,56 @@
+name: CI develop → release
+
+on:
+  push:
+    branches:
+      - develop
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  create-release-pr:
+    if: contains(github.event.head_commit.message, 'Merge pull request') || contains(github.event.head_commit.message, '(#')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: |
+          python -m pip install --upgrade pip
+          pip install toml
+
+      - name: Determinar próxima versão
+        id: version
+        run: |
+          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          BASE="${LAST_TAG#v}"
+          MAJOR=$(echo $BASE | cut -d. -f1)
+          MINOR=$(echo $BASE | cut -d. -f2)
+          PATCH=$(echo $BASE | cut -d. -f3)
+          PATCH=$((PATCH+1))
+          NEXT_TAG="v$MAJOR.$MINOR.$PATCH"
+          echo "next_tag=$NEXT_TAG" >> $GITHUB_OUTPUT
+
+      - name: Criar branch release se não existir
+        run: |
+          if git ls-remote --exit-code --heads origin release/${{ steps.version.outputs.next_tag }}; then
+            echo "Branch release já existe"
+          else
+            git checkout -b release/${{ steps.version.outputs.next_tag }}
+            git push origin release/${{ steps.version.outputs.next_tag }}
+          fi
+
+      - name: Abrir PR develop → release
+        uses: repo-sync/pull-request@v2
+        with:
+          source_branch: develop
+          destination_branch: release/${{ steps.version.outputs.next_tag }}
+          github_token: ${{ secrets.REPO_SYNC_TOKEN }}
+          pr_title: 'Merge develop → release/${{ steps.version.outputs.next_tag }}'
+          pr_body: 'Preparando release ${{ steps.version.outputs.next_tag }}'
+          pr_label: 'prepare-release'
